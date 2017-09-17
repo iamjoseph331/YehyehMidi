@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "41C373CF2F47E46EE8C028CA38E47139FC145774",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "41C373CF2F47E46EE8C028CA38E47139FC145774" : 9223372036854775807,
+    "90E2F969A762FB62C413A0C44D1F334E6EC3F531" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "4247188E-8C1C-4CF0-B31E-7BC09F0D7E30",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "41C373CF2F47E46EE8C028CA38E47139FC145774" : "yehMidi\/",
+    "90E2F969A762FB62C413A0C44D1F334E6EC3F531" : "..\/..\/Downloads\/of_v0.9.8_osx_release\/addons\/ofxMidi"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "myMidi2",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "myMidi2\/myMidi2.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/iamjoseph331\/YehyehMidi.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "41C373CF2F47E46EE8C028CA38E47139FC145774"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/github.com\/danomatika\/ofxMidi.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "90E2F969A762FB62C413A0C44D1F334E6EC3F531"
+    }
+  ]
+}

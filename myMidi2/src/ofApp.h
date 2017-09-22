@@ -14,7 +14,7 @@
 
 //Set the max amount of notes/circles we can display at any time
 
-#define MAX_NUM_OF_NOTES 1000
+#define MAX_NUM_OF_NOTES 200
 
 //Structure that stores information for a single note/circle
 

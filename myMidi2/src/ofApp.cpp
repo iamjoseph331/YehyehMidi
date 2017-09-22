@@ -36,13 +36,12 @@ void ofApp::test_motivation(){
             int difference = noteData[i].note_num - motivation[0].note_num;
             if(abs(noteData[i+j].note_num  - motivation[j].note_num - difference) <= 1 && noteData[i+j].time_counter > 200){
                 alikeness += 1/(double)motivation.size();
-                //printf("%lf ", alikeness);
             }
             if(alikeness >= 0.9){
                 ofImage maple;
                 maple.load("../../images/pic1.bmp");
                 ofSetColor(255, 255, 255, noteData[i].time_counter);
-                maple.draw(ofGetWidth() - ((noteData[i].note_num - 20) * ofGetWidth() / 90),ofGetHeight() - ((noteData[i].note_num - 20) * ofGetHeight() / 90),60,60);
+                maple.draw(ofGetWidth() - ((noteData[i].note_num - 20) * ofGetWidth() / 90),ofGetHeight() - ((noteData[i].note_num - 20) * ofGetHeight() / 90),noteData[i].note_vel,noteData[i].note_vel);
 
             }
         }
@@ -94,7 +93,6 @@ void ofApp::newMidiMessage (ofxMidiMessage& msg)
     //if we have received a note-on message
     if (msg.status == MIDI_NOTE_ON && msg.velocity >= 5)
     {
-        printf("%lf\n",alikeness);
         //search through each member of the note data array
         for (int i = 0; i < MAX_NUM_OF_NOTES; i++)
         {

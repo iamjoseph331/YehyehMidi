@@ -20,8 +20,6 @@ long long int quant_melody = 50;
 int rasuto_noto = 0;
 bool flag_melody_line = false;
 
-bool chords[20] = {0};
-int ringing[12] = {0};
 int chord_type9[3][9] = {{0,4,7,11,14,12,16,19,23}, //big      9 chord
                          {0,3,7,10,14,12,15,19,22}, //small    9 chord
                          {0,4,7,10,14,12,16,19,22}};//dominant 9 chord
@@ -37,27 +35,27 @@ double alikeness = 0.0;
 
 struct opedvol{
     bool keyup = false;
-    int id;
-    int op;
-    int ed;
-    int vol;
+    int id = 0;
+    int op = 0;
+    int ed = 0;
+    int vol = 0;
 };
 
 struct Nset{
-    int direct;         //undecided up1 down1 up2 down2
-    int st_note;
-    int ed_note;
-    int life;
+    int direct = 5;         //undecided up1 down1 up2 down2
+    int st_note = 0;
+    int ed_note = 0;
+    int life = 0;
     vector<int> notes;
 };
 
 struct img{
-    string path;
-    int posx;
-    int posy;
-    int size;
-    int birth;
-    int id;
+    string path = "";
+    int posx = 0;
+    int posy = 0;
+    int size = 0;
+    int birth = 0;
+    int id = 0;
 };
 
 vector <opedvol> lines[90];
@@ -73,7 +71,6 @@ void ofApp::test_palindrome(int i){
             if(order[i].notes[j] != order[i].notes[ss - j - 1])
                 return;
         }
-        printf("Chain conney\n");
         unsigned long svec = imgvec.size();
         int newid = 200 + order[i].notes.size() * 100 + i;
         for(int i = 0; i < svec; i++){
@@ -156,7 +153,6 @@ void ofApp::test_chord(){
                                 return;
                             }
                         }
-                        printf("9 %d!\n",j);
                         img myimg;
                         switch(j){
                             case 0:
@@ -210,7 +206,6 @@ void ofApp::test_chord(){
                                 return;
                             }
                         }
-                        printf("7 %d!\n",j);
                         img myimg;
                         switch(j){
                             case 0:
@@ -263,7 +258,6 @@ void ofApp::test_chord(){
                                 return;
                             }
                         }
-                        printf("3 %d!\n",j);
                         img myimg;
                         switch(j){
                             case 0:
@@ -289,7 +283,6 @@ void ofApp::test_chord(){
         }
     }
     if(downcount >= 4){
-        printf("chord disaster!\n");
         img myimg;
         myimg.path = imgdisaster;
         myimg.birth = timer;
@@ -342,11 +335,16 @@ void ofApp::setup()
     //set the instructions to be displayed on startup
     showingInstructions = true;
     
+    for(int i = 0; i < 90; i++){
+        lines[i].clear();
+    }
     //read in configuration files
     FILE *fp;
+    FILE *fp2;
     fp = fopen("config.txt", "r");
     if(fp == NULL){
         printf("No such file\n");
+        return;
     }
     char srp[100];
     fscanf(fp, "%s", srp);
@@ -359,7 +357,6 @@ void ofApp::setup()
     fscanf(fp, "%d", &disap);
     fscanf(fp, "%s", srp);
     fscanf(fp, "%d", &hoola);
-    printf("%d %d %d %d %d\n", measure, zoom, note, disap, hoola);
     fscanf(fp, "%s", srp);
     fscanf(fp, "%s", img9big);
     fscanf(fp, "%s", srp);
@@ -380,7 +377,6 @@ void ofApp::setup()
     fscanf(fp, "%s", imgdisaster);
     fscanf(fp, "%s", srp);
     fscanf(fp, "%s", imgpalin);
-    printf("%s\n",img3big);
     fclose(fp);
 }
 
@@ -395,7 +391,7 @@ void ofApp::newMidiMessage (ofxMidiMessage& msg)
 {
     //if we have received a note-on message
     if (msg.status == MIDI_NOTE_OFF){
-        printf("Note %d off\n", msg.pitch);
+        //printf("Note %d off\n", msg.pitch);
         int p = msg.pitch;
         unsigned long linsize = lines[p].size();
         if(linsize == 0)return;
@@ -474,6 +470,7 @@ void ofApp::newMidiMessage (ofxMidiMessage& msg)
         mynset.st_note = p;
         mynset.ed_note = p;
         mynset.life = timer;
+        mynset.notes.clear();
         mynset.notes.push_back(p);
         order.push_back(mynset);
     }
@@ -660,10 +657,7 @@ void ofApp::draw()
     //=======================================
     
     //draw/update all the notes circles...
-    for(int i = 0; i < 12; i++) ringing[i] = false;
-    
     //search through each note/circle
-    unsigned long ss = Notevec.size();
     for (int i = 0; i < 88; i++)
     {
         //if the circle is currently visible
@@ -683,13 +677,11 @@ void ofApp::draw()
                 drawnote(i, alpha, lines[i][j].op, timer, lines[i][j].vol / zoom);
             else
                 drawnote(i, alpha, lines[i][j].op, lines[i][j].ed, lines[i][j].vol / zoom);
-            ringing[i % 12] = true;
         }
         if(timer - lines[i][0].ed > disap){
             lines[i].erase(lines[i].begin());
         }
     }
-    
     if(peek){
         for (int i = 0; i < MAX_NUM_OF_NOTES; i++){
             printf("%d ",Notevec[i].note_num);
@@ -704,7 +696,6 @@ void ofApp::draw()
     
     //draw image here
     unsigned long size_imgvec = imgvec.size();
-    //printf("%lu\n",size_imgvec);
     for(int i = 0; i < size_imgvec; i++){
         ofImage img;
         ofLoadImage(img, imgvec[i].path);

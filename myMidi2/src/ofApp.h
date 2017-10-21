@@ -60,8 +60,8 @@ private:
     bool showingInstructions;
     
     //path of images
-    char img9big[20], img9small[20], img9dom[20], img7big[20], img7small[20], img7dom[20];
-    char img3big[20], img3small[20], imgdisaster[20];
-    char imgpalin[20];
+    char img9big[50], img9small[50], img9dom[50], img7big[50], img7small[50], img7dom[50];
+    char img3big[50], img3small[50], imgdisaster[50];
+    char imgpalin[50];
     
 };

@@ -72,9 +72,9 @@ void ofApp::test_palindrome(int i){
                 return;
         }
         unsigned long svec = imgvec.size();
-        int newid = 200 + order[i].notes.size() * 100 + i;
-        for(int i = 0; i < svec; i++){
-            if(imgvec[i].id == newid && imgvec[i].birth >= lines[i].back().op){
+        int newid = 2000 + order[i].notes.size() * 100 + order[i].st_note;
+        for(int j = 0; j < svec; j++){
+            if(imgvec[j].id == newid && imgvec[j].birth >= lines[order[i].st_note].back().op){
                 return;
             }
         }
@@ -313,6 +313,28 @@ void ofApp::test_chord(){
 
 void ofApp::setup()
 {
+#ifdef TARGET_OSX
+    // Get the absolute location of the executable file in the bundle.
+    CFBundleRef appBundle     = CFBundleGetMainBundle();
+    CFURLRef    executableURL = CFBundleCopyExecutableURL(appBundle);
+    char execFile[4096];
+    if (CFURLGetFileSystemRepresentation(executableURL, TRUE, (UInt8 *)execFile, 4096))
+    {
+        // Strip out the filename to just get the path
+        string strExecFile = execFile;
+        unsigned long found = strExecFile.find_last_of("/");
+        string strPath = strExecFile.substr(0, found);
+        
+        // Change the working directory to that of the executable
+        if(-1 == chdir(strPath.c_str())) {
+            ofLog(OF_LOG_ERROR, "Unable to change working directory to executable's directory.");
+        }
+    }
+    else {
+        ofLog(OF_LOG_ERROR, "Unable to identify executable's directory.");
+    }
+    CFRelease(executableURL);
+#endif
     ofSetVerticalSync(true);
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetFrameRate(60);
@@ -344,39 +366,41 @@ void ofApp::setup()
     fp = fopen("config.txt", "r");
     if(fp == NULL){
         printf("No such file\n");
-        return;
     }
-    char srp[100];
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%d", &measure);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%d", &zoom);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%d", &note);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%d", &disap);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%d", &hoola);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%s", img9big);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%s", img9small);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%s", img9dom);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%s", img7big);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%s", img7small);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%s", img7dom);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%s", img3big);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%s", img3small);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%s", imgdisaster);
-    fscanf(fp, "%s", srp);
-    fscanf(fp, "%s", imgpalin);
+    else{
+        char srp[100];
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &measure);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &zoom);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &note);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &disap);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &hoola);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img9big);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img9small);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img9dom);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img7big);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img7small);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img7dom);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img3big);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img3small);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", imgdisaster);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", imgpalin);
+        printf("parse ended\n");
+    }
     fclose(fp);
 }
 
@@ -707,7 +731,7 @@ void ofApp::draw()
             imgvec[i].posx += 1;
             imgvec[i].posy += 1;
         }
-        if(imgvec[i].size == 0){
+        if(imgvec[i].size <= 0){
             imgvec.erase(imgvec.begin()+i);
             i--;
             size_imgvec--;

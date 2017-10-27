@@ -8,8 +8,11 @@
 #define note    120
 #define disap   2000
 #define hoola   1200
+#define shrink  4
 */
 int measure = 10, zoom = 8, note = 120, disap = 2000, hoola = 1200;
+int img_size = 25, shrink = 4;
+int gap = 30;
 //===========================================================================
 //The setup() function is called once when the application is first launched.
 //This initialises all the applications variables and objects and sets its
@@ -19,6 +22,7 @@ long long int last_note_timestamp = 0;
 long long int quant_melody = 50;
 int rasuto_noto = 0;
 bool flag_melody_line = false;
+bool sweet = false;
 
 int chord_type9[3][9] = {{0,4,7,11,14,12,16,19,23}, //big      9 chord
                          {0,3,7,10,14,12,15,19,22}, //small    9 chord
@@ -83,7 +87,7 @@ void ofApp::test_palindrome(int i){
         myimg.path = imgpalin;
         myimg.posx = random() % ofGetHeight();
         myimg.posy = random() % ofGetWidth();
-        myimg.size = order[i].notes.size() * 25;
+        myimg.size = order[i].notes.size() * img_size;
         myimg.id = newid;
         imgvec.push_back(myimg);
     }
@@ -122,8 +126,10 @@ void ofApp::test_chord(){
     }
     int downcount = 0;
     int dcnt = 0;
+    int dd = 0;
     for(int i = 0; i < 88; i++){
         if(kdown[i] == 1){
+            if(dd == 0) dd = i;
             downcount += 1;
             dcnt = i;
             // 9 chord test
@@ -152,6 +158,9 @@ void ofApp::test_chord(){
                             if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
                                 return;
                             }
+                            else if(imgvec[m].id % 100 == i && timer - imgvec[m].birth <= gap){
+                                return;
+                            }
                         }
                         img myimg;
                         switch(j){
@@ -170,7 +179,7 @@ void ofApp::test_chord(){
                         }
                         myimg.birth = timer;
                         myimg.id = newid;
-                        myimg.size = lines[i + chord_type9[j][k+endpt] - chord_type9[j][k]].back().vol;
+                        myimg.size = lines[i + chord_type9[j][k+endpt] - chord_type9[j][k]].back().vol * img_size;
                         myimg.posx = rand() % ofGetHeight();
                         myimg.posy = rand() % ofGetWidth();
                         imgvec.push_back(myimg);
@@ -205,6 +214,10 @@ void ofApp::test_chord(){
                             if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
                                 return;
                             }
+                            else if(imgvec[m].id % 100 == i && timer - imgvec[m].birth <= gap){
+                                return;
+                            }
+
                         }
                         img myimg;
                         switch(j){
@@ -223,7 +236,7 @@ void ofApp::test_chord(){
                         }
                         myimg.birth = timer;
                         myimg.id = newid;
-                        myimg.size = lines[i + chord_type7[j][k+endpt] - chord_type7[j][k]].back().vol;
+                        myimg.size = lines[i + chord_type7[j][k+endpt] - chord_type7[j][k]].back().vol * img_size;
                         myimg.posx = rand() % ofGetHeight();
                         myimg.posy = rand() % ofGetWidth();
                         imgvec.push_back(myimg);
@@ -257,6 +270,9 @@ void ofApp::test_chord(){
                             if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
                                 return;
                             }
+                            else if(imgvec[m].id % 100 == i && timer - imgvec[m].birth <= gap){
+                                return;
+                            }
                         }
                         img myimg;
                         switch(j){
@@ -272,7 +288,7 @@ void ofApp::test_chord(){
                         }
                         myimg.birth = timer;
                         myimg.id = newid;
-                        myimg.size = lines[i + chord_type3[j][k+endpt] - chord_type3[j][k]].back().vol;
+                        myimg.size = lines[i + chord_type3[j][k+endpt] - chord_type3[j][k]].back().vol * img_size;
                         myimg.posx = rand() % ofGetHeight();
                         myimg.posy = rand() % ofGetWidth();
                         imgvec.push_back(myimg);
@@ -287,6 +303,18 @@ void ofApp::test_chord(){
         myimg.path = imgdisaster;
         myimg.birth = timer;
         myimg.id = 3039751;
+        unsigned long ss = imgvec.size();
+        int newid = 3039751;
+        for(int m = 0; m < ss; m++){
+            if(dd == 0)
+                break;
+            if(imgvec[m].id == newid && imgvec[m].birth >= lines[dd].back().op){
+                return;
+            }
+            else if(imgvec[m].id % 100 == dd && timer - imgvec[m].birth <= gap){
+                return;
+            }
+        }
         myimg.size = 120;
         if(lines[dcnt].back().vol > 75){
             myimg.posx = (ofGetHeight() / 3) + (rand() % (ofGetHeight() / 3));
@@ -301,14 +329,6 @@ void ofApp::test_chord(){
         myimg.posy = rand() % ofGetWidth();
         imgvec.push_back(myimg);
     }
-    /*for(int i = 0; i < 5; i++){
-        if(ringing[i] && ringing[i+4] && ringing[i+7]){
-            ofImage maple;
-            maple.load("images/chords/3chord/pic1.bmp");
-            ofSetColor(255, 255, 255, noteData[i].time_counter);
-            maple.draw(ofGetWidth() - ((noteData[i].note_num - 20) * ofGetWidth() / 90),ofGetHeight() - ((noteData[i].note_num - 20) * ofGetHeight() / 90),noteData[i].note_vel*1.3,noteData[i].note_vel*1.3);
-        }
-    }*/
 }
 
 void ofApp::setup()
@@ -380,6 +400,11 @@ void ofApp::setup()
         fscanf(fp, "%s", srp);
         fscanf(fp, "%d", &hoola);
         fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &img_size);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &shrink);
+        
+        fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9big);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9small);
@@ -399,8 +424,11 @@ void ofApp::setup()
         fscanf(fp, "%s", imgdisaster);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", imgpalin);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", candy);
         printf("parse ended\n");
     }
+    printf("Routes: %s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",img9big,img9small,img9dom,img7big,img7small,img7dom,img3big,img3small,imgdisaster,imgpalin);
     fclose(fp);
 }
 
@@ -661,11 +689,27 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
     for(int k = op; k < ed; k++){
         if(ed - op < note){
             ppp.x = (k / 10) % ofGetWidth();
-            ofCircle(ppp,vol);
+            if(sweet){
+                ofImage cdy;
+                ofLoadImage(cdy, candy);
+                cdy.update();
+                cdy.draw(ppp, vol, vol);
+            }
+            else{
+                ofCircle(ppp,vol);
+            }
             break;
         }
         ppp.x = (k / 10) % ofGetWidth();
-        ofCircle(ppp,vol);
+        if(sweet){
+            ofImage cdy;
+            ofLoadImage(cdy, candy);
+            cdy.update();
+            cdy.draw(ppp, vol, vol);
+        }
+        else{
+            ofCircle(ppp,vol);
+        }
     }
     //reduce the notes time value by 1 so that next time this function is called
     //it draws the notes circle with a greater transparency, giving the illusion
@@ -693,16 +737,16 @@ void ofApp::draw()
             if(timer - lines[i][j].ed > disap){
                 alpha = 0;
             }
-            else{
+            else if(lines[i][j].keyup == true){
                 alpha = 255 - (255 * (timer - lines[i][j].ed) / disap);
             }
             
             if( j == linsize - 1 && lines[i][j].keyup == false)
-                drawnote(i, alpha, lines[i][j].op, timer, lines[i][j].vol / zoom);
+                drawnote(i, 255, lines[i][j].op, timer, lines[i][j].vol / zoom);
             else
                 drawnote(i, alpha, lines[i][j].op, lines[i][j].ed, lines[i][j].vol / zoom);
         }
-        if(timer - lines[i][0].ed > disap){
+        if(timer - lines[i][0].ed > disap && lines[i][0].keyup == true){
             lines[i].erase(lines[i].begin());
         }
     }
@@ -726,7 +770,7 @@ void ofApp::draw()
         img.update();
         ofSetColor(255, 255, 255);
         img.draw(imgvec[i].posx, imgvec[i].posy, imgvec[i].size, imgvec[i].size);
-        if(i % 2){
+        if(timer % shrink == 0){
             imgvec[i].size -= 2;
             imgvec[i].posx += 1;
             imgvec[i].posy += 1;
@@ -790,6 +834,9 @@ void ofApp::draw()
 
 void ofApp::keyPressed(int key)
 {
+    if (key == 'b'){
+        sweet = !sweet;
+    }
     //if key 's' has been pressed
     if (key == 's')
     {

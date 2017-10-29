@@ -63,5 +63,5 @@ private:
     char img9big[50], img9small[50], img9dom[50], img7big[50], img7small[50], img7dom[50];
     char img3big[50], img3small[50], imgdisaster[50];
     char imgpalin[50], candy[50];
-    
+    char background[50] = "NONE";
 };

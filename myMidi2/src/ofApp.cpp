@@ -426,9 +426,10 @@ void ofApp::setup()
         fscanf(fp, "%s", imgpalin);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", candy);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", background);
         printf("parse ended\n");
     }
-    printf("Routes: %s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",img9big,img9small,img9dom,img7big,img7small,img7dom,img3big,img3small,imgdisaster,imgpalin);
     fclose(fp);
 }
 
@@ -618,62 +619,50 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
     //set the colour of the circle based on the notes note number
     switch(i % 12){
         case 0:
-            //printf("Do\n");
             ofSetColor(255,  0,  0, alpha);
             break;
             
         case 1:
-            //printf("Do#\n");
             ofSetColor(238,130,238, alpha);
             break;
 
         case 2:
-            //printf("Re\n");
             ofSetColor(255,255,  0, alpha);
             break;
             
         case 3:
-            //printf("Re#\n");
             ofSetColor(255,160,122, alpha);
             break;
             
         case 4:
-            //printf("Mi\n");
             ofSetColor(135,206,235, alpha);
             break;
             
         case 5:
-            //printf("Fa\n");
             ofSetColor(139,  0,  0, alpha);
             break;
             
         case 6:
-            //printf("Fa#\n");
             ofSetColor( 66,192,251, alpha);
             break;
             
         case 7:
-            //printf("Sol\n");
             ofSetColor(255,140,  0, alpha);
             break;
             
         case 8:
-            //printf("Sol#\n");
             ofSetColor(221,160,221, alpha);
             break;
             
         case 9:
-            //printf("La\n");
             ofSetColor(  0,128,  0, alpha);
             break;
             
         case 10:
-            //printf("La#\n");
             ofSetColor(199, 21,133, alpha);
             break;
             
         case 11:
-            //printf("Ti\n");
             ofSetColor(  0,  0,255, alpha);
             break;
             
@@ -685,7 +674,6 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
     //draw a circle using the notes ofPoint value to determine the position,
     //and the notes velocity value to determine size of the circle.
     ppp.y = ofGetHeight() - ((i + 6) * ofGetHeight() / 100);
-    //printf("from %d to %d\n", op, ed);
     for(int k = op; k < ed; k++){
         if(ed - op < note){
             ppp.x = (k / 10) % ofGetWidth();
@@ -723,6 +711,13 @@ void ofApp::draw()
     //update the background of the app to be a gradient based on the last received MIDI CC 1 value
     ofBackgroundGradient(0, backgroundColour);
     //=======================================
+    ofImage bkgd;
+    if(strcmp(background,"NONE") != 0){
+        ofLoadImage(bkgd,background);
+        ofSetColor(255, 255, 255);
+        bkgd.update();
+        bkgd.draw(0, 0, ofGetWidth(), ofGetHeight());
+    }
     
     //draw/update all the notes circles...
     //search through each note/circle
@@ -823,7 +818,7 @@ void ofApp::draw()
         ofDrawBitmapString("Press 0-9 on the keyboard to set the connected port number.", 10, last_line_pos + 100);
         ofDrawBitmapString("Press lowercase 's' on the keyboard to show/hide this text.", 10, last_line_pos + 120);
         ofDrawBitmapString("Press lowercase 'm' on the keyboard to record your motivation.", 10, last_line_pos + 140);
-        
+        ofDrawBitmapString("Press lowercase 'b' on the keyboard to switch note image.", 10, last_line_pos + 160);
     } //if (showingInstructions)
 }
 
@@ -863,15 +858,6 @@ void ofApp::keyPressed(int key)
         }
         else{
             printf("End record\n");
-            /*
-            //erase leading blanks
-            while(motivation[0].note_num == 0){
-                motivation.erase(motivation.begin());
-            }
-            //erase rear blanks
-            while(motivation.back().note_num == 0){
-                motivation.pop_back();
-            }*/
         }
         record = !record;
     }

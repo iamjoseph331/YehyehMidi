@@ -62,9 +62,21 @@ struct img{
     int id = 0;
 };
 
-vector <opedvol> lines[90];
+vector <opedvol> lines[200];
 vector <Nset> order;
 vector <img> imgvec;
+
+void clean(){
+    for(int i = 0; i < 200; i++){
+        lines[i].clear();
+    }
+    order.clear();
+    imgvec.clear();
+    timer = 0;
+    last_note_timestamp = 0;
+    rasuto_noto = 0;
+    return;
+}
 
 void ofApp::test_palindrome(int i){
     if(order[i].st_note == order[i].ed_note){
@@ -100,7 +112,6 @@ void ofApp::test_motivation(){
         alikeness = 0.0;
         
         for(int j = 0; j < motivation.size(); j++){
-            //printf("%d\n",noteData[i+j].note_num);
             int difference = noteData[i].note_num - motivation[0].note_num;
             if(abs(noteData[i+j].note_num  - motivation[j].note_num - difference) <= 1 && noteData[i+j].time_counter > 200){
                 alikeness += 1/(double)motivation.size();
@@ -109,7 +120,7 @@ void ofApp::test_motivation(){
                 ofImage maple;
                 maple.load("images/motivations/pic1.bmp");
                 ofSetColor(255, 255, 255, noteData[i].time_counter);
-                maple.draw(ofGetWidth() - ((noteData[i].note_num - 20) * ofGetWidth() / 90),ofGetHeight() - ((noteData[i].note_num - 20) * ofGetHeight() / 90),noteData[i].note_vel*1.3,noteData[i].note_vel*1.3);
+                maple.draw(ofGetWidth() - ((noteData[i].note_num - 20) * ofGetWidth() / 120),ofGetHeight() - ((noteData[i].note_num - 20) * ofGetHeight() / 120),noteData[i].note_vel*1.3,noteData[i].note_vel*1.3);
             }
         }
     }
@@ -117,8 +128,8 @@ void ofApp::test_motivation(){
 
 
 void ofApp::test_chord(){
-    bool kdown[150] = {0};
-    for(int i = 0; i < 88; i++){
+    bool kdown[200] = {0};
+    for(int i = 0; i < 200; i++){
         if(lines[i].size() == 0)
             continue;
         if(lines[i].back().keyup == false)
@@ -127,7 +138,7 @@ void ofApp::test_chord(){
     int downcount = 0;
     int dcnt = 0;
     int dd = 0;
-    for(int i = 0; i < 88; i++){
+    for(int i = 0; i < 200; i++){
         if(kdown[i] == 1){
             if(dd == 0) dd = i;
             downcount += 1;
@@ -377,7 +388,7 @@ void ofApp::setup()
     //set the instructions to be displayed on startup
     showingInstructions = true;
     
-    for(int i = 0; i < 90; i++){
+    for(int i = 0; i < 200; i++){
         lines[i].clear();
     }
     //read in configuration files
@@ -603,6 +614,9 @@ void ofApp::update()
         else if(timer - order[i].life >= hoola/2)
             test_palindrome(i);
     }
+    if (timer > 999999){
+        clean();
+    }
 }
 
 //===========================================================================
@@ -721,7 +735,7 @@ void ofApp::draw()
     
     //draw/update all the notes circles...
     //search through each note/circle
-    for (int i = 0; i < 88; i++)
+    for (int i = 0; i < 200; i++)
     {
         //if the circle is currently visible
         unsigned long linsize = lines[i].size();

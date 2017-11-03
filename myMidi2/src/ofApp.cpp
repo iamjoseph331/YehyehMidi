@@ -1,5 +1,6 @@
 #include "ofApp.h"
 #include <stdio.h>
+#define img_dissap
 //#define quarter
 //#define debug_motivation
 /*
@@ -12,7 +13,7 @@
 */
 int measure = 10, zoom = 8, note = 120, disap = 2000, hoola = 1200;
 int img_size = 25, shrink = 4;
-int gap = 30;
+int gap = 0;
 //===========================================================================
 //The setup() function is called once when the application is first launched.
 //This initialises all the applications variables and objects and sets its
@@ -55,11 +56,12 @@ struct Nset{
 
 struct img{
     string path = "";
-    int posx = 0;
-    int posy = 0;
-    int size = 0;
-    int birth = 0;
-    int id = 0;
+    bool live = true;
+    int  posx = 0;
+    int  posy = 0;
+    int  size = 0;
+    int  birth = 0;
+    int  id = 0;
 };
 
 vector <opedvol> lines[200];
@@ -97,7 +99,7 @@ void ofApp::test_palindrome(int i){
         img myimg;
         myimg.birth = timer;
         myimg.path = imgpalin;
-        myimg.posx = random() % ofGetHeight();
+        myimg.posx = 50 + rand() % (ofGetHeight() - 100);
         myimg.posy = random() % ofGetWidth();
         myimg.size = order[i].notes.size() * img_size;
         myimg.id = newid;
@@ -125,7 +127,6 @@ void ofApp::test_motivation(){
         }
     }
 }
-
 
 void ofApp::test_chord(){
     bool kdown[200] = {0};
@@ -167,6 +168,7 @@ void ofApp::test_chord(){
                         int newid = 90000 + (k * 1000) + (j * 100) + i;
                         for(int m = 0; m < ss; m++){
                             if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
+                                imgvec[m].live = true;
                                 return;
                             }
                             else if(imgvec[m].id % 100 == i && timer - imgvec[m].birth <= gap){
@@ -191,7 +193,7 @@ void ofApp::test_chord(){
                         myimg.birth = timer;
                         myimg.id = newid;
                         myimg.size = lines[i + chord_type9[j][k+endpt] - chord_type9[j][k]].back().vol * img_size;
-                        myimg.posx = rand() % ofGetHeight();
+                        myimg.posx = 50 + rand() % (ofGetHeight() - 100);
                         myimg.posy = rand() % ofGetWidth();
                         imgvec.push_back(myimg);
                         return;
@@ -223,6 +225,7 @@ void ofApp::test_chord(){
                         int newid = 70000 + (k * 1000) + (j * 100) + i;
                         for(int m = 0; m < ss; m++){
                             if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
+                                imgvec[m].live = true;
                                 return;
                             }
                             else if(imgvec[m].id % 100 == i && timer - imgvec[m].birth <= gap){
@@ -248,7 +251,7 @@ void ofApp::test_chord(){
                         myimg.birth = timer;
                         myimg.id = newid;
                         myimg.size = lines[i + chord_type7[j][k+endpt] - chord_type7[j][k]].back().vol * img_size;
-                        myimg.posx = rand() % ofGetHeight();
+                        myimg.posx = 50 + rand() % (ofGetHeight() - 100);
                         myimg.posy = rand() % ofGetWidth();
                         imgvec.push_back(myimg);
                         return;
@@ -279,6 +282,7 @@ void ofApp::test_chord(){
                         int newid = 30000 + (k * 1000) + (j * 100) + i;
                         for(int m = 0; m < ss; m++){
                             if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
+                                imgvec[m].live = true;
                                 return;
                             }
                             else if(imgvec[m].id % 100 == i && timer - imgvec[m].birth <= gap){
@@ -300,7 +304,7 @@ void ofApp::test_chord(){
                         myimg.birth = timer;
                         myimg.id = newid;
                         myimg.size = lines[i + chord_type3[j][k+endpt] - chord_type3[j][k]].back().vol * img_size;
-                        myimg.posx = rand() % ofGetHeight();
+                        myimg.posx = 50 + rand() % (ofGetHeight() - 100);
                         myimg.posy = rand() % ofGetWidth();
                         imgvec.push_back(myimg);
                         return;
@@ -309,7 +313,7 @@ void ofApp::test_chord(){
             }
         }
     }
-    if(downcount >= 4){
+    if(downcount > 4){
         img myimg;
         myimg.path = imgdisaster;
         myimg.birth = timer;
@@ -687,7 +691,7 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
     ofPoint ppp;
     //draw a circle using the notes ofPoint value to determine the position,
     //and the notes velocity value to determine size of the circle.
-    ppp.y = ofGetHeight() - ((i + 6) * ofGetHeight() / 100);
+    ppp.y = ofGetHeight() - ((i - 15) * ofGetHeight() / 115);
     for(int k = op; k < ed; k++){
         if(ed - op < note){
             ppp.x = (k / 10) % ofGetWidth();
@@ -779,6 +783,18 @@ void ofApp::draw()
         img.update();
         ofSetColor(255, 255, 255);
         img.draw(imgvec[i].posx, imgvec[i].posy, imgvec[i].size, imgvec[i].size);
+#ifdef img_dissap
+        if(imgvec[i].live == false){
+            imgvec.erase(imgvec.begin()+i);
+            i--;
+            size_imgvec--;
+            continue;
+        }
+        else{
+            imgvec[i].live = false;
+        }
+#endif
+#ifdef img_fade
         if(timer % shrink == 0){
             imgvec[i].size -= 2;
             imgvec[i].posx += 1;
@@ -789,6 +805,9 @@ void ofApp::draw()
             i--;
             size_imgvec--;
         }
+#endif
+        
+        
     }
     
 #ifdef debug_motivation
@@ -831,7 +850,7 @@ void ofApp::draw()
         
         ofDrawBitmapString("Press 0-9 on the keyboard to set the connected port number.", 10, last_line_pos + 100);
         ofDrawBitmapString("Press lowercase 's' on the keyboard to show/hide this text.", 10, last_line_pos + 120);
-        ofDrawBitmapString("Press lowercase 'm' on the keyboard to record your motivation.", 10, last_line_pos + 140);
+        ofDrawBitmapString("Press lowercase 'p' on the keyboard to start.", 10, last_line_pos + 140);
         ofDrawBitmapString("Press lowercase 'b' on the keyboard to switch note image.", 10, last_line_pos + 160);
     } //if (showingInstructions)
 }
@@ -846,8 +865,11 @@ void ofApp::keyPressed(int key)
     if (key == 'b'){
         sweet = !sweet;
     }
+    else if( key == 'p'){
+        clean();
+    }
     //if key 's' has been pressed
-    if (key == 's')
+    else if (key == 's')
     {
         //set instructions to show or hide (depending on their current state)
         //the next time that the draw() function is called.

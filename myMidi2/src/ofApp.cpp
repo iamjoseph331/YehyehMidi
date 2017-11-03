@@ -99,8 +99,8 @@ void ofApp::test_palindrome(int i){
         img myimg;
         myimg.birth = timer;
         myimg.path = imgpalin;
-        myimg.posx = 50 + rand() % (ofGetHeight() - 100);
-        myimg.posy = random() % ofGetWidth();
+        myimg.posx = rand() % ofGetWidth();
+        myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
         myimg.size = order[i].notes.size() * img_size;
         myimg.id = newid;
         imgvec.push_back(myimg);
@@ -193,8 +193,8 @@ void ofApp::test_chord(){
                         myimg.birth = timer;
                         myimg.id = newid;
                         myimg.size = lines[i + chord_type9[j][k+endpt] - chord_type9[j][k]].back().vol * img_size;
-                        myimg.posx = 50 + rand() % (ofGetHeight() - 100);
-                        myimg.posy = rand() % ofGetWidth();
+                        myimg.posx = rand() % ofGetWidth();
+                        myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
                         imgvec.push_back(myimg);
                         return;
                     }
@@ -251,8 +251,8 @@ void ofApp::test_chord(){
                         myimg.birth = timer;
                         myimg.id = newid;
                         myimg.size = lines[i + chord_type7[j][k+endpt] - chord_type7[j][k]].back().vol * img_size;
-                        myimg.posx = 50 + rand() % (ofGetHeight() - 100);
-                        myimg.posy = rand() % ofGetWidth();
+                        myimg.posx = rand() % ofGetWidth();
+                        myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
                         imgvec.push_back(myimg);
                         return;
                         }
@@ -304,8 +304,8 @@ void ofApp::test_chord(){
                         myimg.birth = timer;
                         myimg.id = newid;
                         myimg.size = lines[i + chord_type3[j][k+endpt] - chord_type3[j][k]].back().vol * img_size;
-                        myimg.posx = 50 + rand() % (ofGetHeight() - 100);
-                        myimg.posy = rand() % ofGetWidth();
+                        myimg.posx = rand() % ofGetWidth();
+                        myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
                         imgvec.push_back(myimg);
                         return;
                     }

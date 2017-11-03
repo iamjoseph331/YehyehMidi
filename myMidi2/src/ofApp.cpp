@@ -82,6 +82,7 @@ void clean(){
 
 void ofApp::test_palindrome(int i){
     if(order[i].st_note == order[i].ed_note){
+        bool last = false;
         unsigned long ss = order[i].notes.size();
         if(ss < 4)
             return;
@@ -93,15 +94,24 @@ void ofApp::test_palindrome(int i){
         int newid = 2000 + order[i].notes.size() * 100 + order[i].st_note;
         for(int j = 0; j < svec; j++){
             if(imgvec[j].id == newid && imgvec[j].birth >= lines[order[i].st_note].back().op){
+                imgvec[j].live = true;
                 return;
             }
+            else if((imgvec[j].id / 1000 == newid / 1000) && timer - imgvec[j].birth < hoola){
+                last = true;
+            }
+        }
+        if(last){
+            return;
+            
         }
         img myimg;
+        myimg.live = true;
         myimg.birth = timer;
         myimg.path = imgpalin;
         myimg.posx = rand() % ofGetWidth();
         myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
-        myimg.size = order[i].notes.size() * img_size;
+        myimg.size = order[i].notes.size() * 4 * img_size * 1.5;
         myimg.id = newid;
         imgvec.push_back(myimg);
     }

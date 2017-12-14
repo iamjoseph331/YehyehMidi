@@ -56,7 +56,7 @@ struct Nset{
 
 struct img{
     string path = "";
-    bool live = true;
+    int  live = 1;
     int  posx = 0;
     int  posy = 0;
     int  size = 0;
@@ -94,7 +94,8 @@ void ofApp::test_palindrome(int i){
         int newid = 2000 + order[i].notes.size() * 100 + order[i].st_note;
         for(int j = 0; j < svec; j++){
             if(imgvec[j].id == newid && imgvec[j].birth >= lines[order[i].st_note].back().op){
-                imgvec[j].live = true;
+                if(imgvec[j].live == 0)
+                    imgvec[j].live = 1;
                 return;
             }
             else if((imgvec[j].id / 1000 == newid / 1000) && timer - imgvec[j].birth < hoola){
@@ -103,13 +104,12 @@ void ofApp::test_palindrome(int i){
         }
         if(last){
             return;
-            
         }
         img myimg;
-        myimg.live = true;
+        myimg.live = 1;
         myimg.birth = timer;
         myimg.path = imgpalin;
-        myimg.posx = rand() % ofGetWidth();
+        myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
         myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
         myimg.size = order[i].notes.size() * 4 * img_size * 1.5;
         myimg.id = newid;
@@ -178,7 +178,8 @@ void ofApp::test_chord(){
                         int newid = 90000 + (k * 1000) + (j * 100) + i;
                         for(int m = 0; m < ss; m++){
                             if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
-                                imgvec[m].live = true;
+                                if(imgvec[j].live == 0)
+                                    imgvec[m].live = 1;
                                 return;
                             }
                             else if(imgvec[m].id % 100 == i && timer - imgvec[m].birth <= gap){
@@ -203,8 +204,12 @@ void ofApp::test_chord(){
                         myimg.birth = timer;
                         myimg.id = newid;
                         myimg.size = lines[i + chord_type9[j][k+endpt] - chord_type9[j][k]].back().vol * img_size;
-                        myimg.posx = rand() % ofGetWidth();
+                        myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
                         myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
+                        myimg.posy /= 2;
+                        if(i < 80){
+                            myimg.posy += ofGetHeight()/2;
+                        }
                         imgvec.push_back(myimg);
                         return;
                     }
@@ -235,7 +240,8 @@ void ofApp::test_chord(){
                         int newid = 70000 + (k * 1000) + (j * 100) + i;
                         for(int m = 0; m < ss; m++){
                             if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
-                                imgvec[m].live = true;
+                                if(imgvec[j].live == 0)
+                                    imgvec[m].live = 1;
                                 return;
                             }
                             else if(imgvec[m].id % 100 == i && timer - imgvec[m].birth <= gap){
@@ -261,8 +267,12 @@ void ofApp::test_chord(){
                         myimg.birth = timer;
                         myimg.id = newid;
                         myimg.size = lines[i + chord_type7[j][k+endpt] - chord_type7[j][k]].back().vol * img_size;
-                        myimg.posx = rand() % ofGetWidth();
+                        myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
                         myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
+                        myimg.posy /= 2;
+                        if(i < 80){
+                            myimg.posy += ofGetHeight()/2;
+                        }
                         imgvec.push_back(myimg);
                         return;
                         }
@@ -292,7 +302,8 @@ void ofApp::test_chord(){
                         int newid = 30000 + (k * 1000) + (j * 100) + i;
                         for(int m = 0; m < ss; m++){
                             if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
-                                imgvec[m].live = true;
+                                if(imgvec[j].live == 0)
+                                    imgvec[m].live = 1;
                                 return;
                             }
                             else if(imgvec[m].id % 100 == i && timer - imgvec[m].birth <= gap){
@@ -314,8 +325,12 @@ void ofApp::test_chord(){
                         myimg.birth = timer;
                         myimg.id = newid;
                         myimg.size = lines[i + chord_type3[j][k+endpt] - chord_type3[j][k]].back().vol * img_size;
-                        myimg.posx = rand() % ofGetWidth();
+                        myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
                         myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
+                        myimg.posy /= 2;
+                        if(i < 80){
+                            myimg.posy += ofGetHeight()/2;
+                        }
                         imgvec.push_back(myimg);
                         return;
                     }
@@ -432,25 +447,47 @@ void ofApp::setup()
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9big);
         fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra9maj);
+        fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9small);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra9min);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9dom);
         fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra9dom);
+        fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7big);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra7maj);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7small);
         fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra7min);
+        fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7dom);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra7dom);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img3big);
         fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra3maj);
+        fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img3small);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra3min);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", imgdisaster);
         fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fradis);
+        fscanf(fp, "%s", srp);
         fscanf(fp, "%s", imgpalin);
         fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &frapal);
+        fscanf(fp, "%s", srp);
         fscanf(fp, "%s", candy);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fracan);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", background);
         printf("parse ended\n");
@@ -732,6 +769,15 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
     //that the circle is fading out over time
 }
 
+void drawimage(int i){
+    ofImage img;
+    ofLoadImage(img, imgvec[i].path);
+    img.update();
+    ofSetColor(255, 255, 255);
+    img.draw(imgvec[i].posx, imgvec[i].posy, imgvec[i].size, imgvec[i].size);
+    
+}
+
 void ofApp::draw()
 {
     
@@ -788,23 +834,32 @@ void ofApp::draw()
     //draw image here
     unsigned long size_imgvec = imgvec.size();
     for(int i = 0; i < size_imgvec; i++){
-        ofImage img;
-        ofLoadImage(img, imgvec[i].path);
-        img.update();
-        ofSetColor(255, 255, 255);
-        img.draw(imgvec[i].posx, imgvec[i].posy, imgvec[i].size, imgvec[i].size);
-#ifdef img_dissap
-        if(imgvec[i].live == false){
+        drawimage(i);
+        
+        #ifdef img_dissap
+        if(imgvec[i].id == 3039751){
+            if(timer - imgvec[i].birth > disap){
+                imgvec[i].id = 3039752;
+            }
+            if(imgvec[i].live == 0)
+                imgvec[i].live = 1;
+        }
+        if(imgvec[i].live <= 0){
+            if(imgvec[i].live > -500){
+                printf("%d\n",imgvec[i].live);
+                imgvec[i].live -= 1;
+                continue;
+            }
             imgvec.erase(imgvec.begin()+i);
             i--;
             size_imgvec--;
             continue;
         }
         else{
-            imgvec[i].live = false;
+            imgvec[i].live = 0;
         }
-#endif
-#ifdef img_fade
+        #endif
+        #ifdef img_fade
         if(timer % shrink == 0){
             imgvec[i].size -= 2;
             imgvec[i].posx += 1;
@@ -815,17 +870,15 @@ void ofApp::draw()
             i--;
             size_imgvec--;
         }
-#endif
-        
-        
+        #endif
     }
     
-#ifdef debug_motivation
+    #ifdef debug_motivation
     for(int i = 0; i < motivation.size(); i++){
         printf("%d ",motivation[i].note_num);
     }
     printf("\n");
-#endif
+    #endif
     
     //=======================================
     //Display the apps instructions

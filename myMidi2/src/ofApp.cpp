@@ -1,3 +1,9 @@
+/*
+ * Modified from:  2015 Liam Lacey
+ * Author:  2017 Joseph Chen
+ *
+ */
+
 #include "ofApp.h"
 #include <stdio.h>
 #define img_dissap
@@ -14,10 +20,12 @@
 int measure = 10, zoom = 8, note = 120, disap = 2000, hoola = 1200;
 int img_size = 25, shrink = 4;
 int gap = 0;
+
 //===========================================================================
 //The setup() function is called once when the application is first launched.
 //This initialises all the applications variables and objects and sets its
 //initial state.
+
 int timer = 0;
 long long int last_note_timestamp = 0;
 long long int quant_melody = 50;
@@ -68,6 +76,131 @@ vector <opedvol> lines[200];
 vector <Nset> order;
 vector <img> imgvec;
 
+
+void ofApp::setup()
+{
+#ifdef TARGET_OSX
+    // Get the absolute location of the executable file in the bundle.
+    CFBundleRef appBundle     = CFBundleGetMainBundle();
+    CFURLRef    executableURL = CFBundleCopyExecutableURL(appBundle);
+    char execFile[4096];
+    if (CFURLGetFileSystemRepresentation(executableURL, TRUE, (UInt8 *)execFile, 4096))
+    {
+        // Strip out the filename to just get the path
+        string strExecFile = execFile;
+        unsigned long found = strExecFile.find_last_of("/");
+        string strPath = strExecFile.substr(0, found);
+        
+        // Change the working directory to that of the executable
+        if(-1 == chdir(strPath.c_str())) {
+            ofLog(OF_LOG_ERROR, "Unable to change working directory to executable's directory.");
+        }
+    }
+    else {
+        ofLog(OF_LOG_ERROR, "Unable to identify executable's directory.");
+    }
+    CFRelease(executableURL);
+#endif
+    ofSetVerticalSync(true);
+    ofSetLogLevel(OF_LOG_VERBOSE);
+    ofSetFrameRate(60);
+    
+    //Open a connection to the first available MIDI input
+    midiIn.openPort(0);
+    
+    //Set this class to listen for incoming MIDI messages
+    midiIn.addListener(this);
+    
+    //initialise the note data array so that no circles will be drawn at startup
+    for (int i = 0; i < MAX_NUM_OF_NOTES; i++)
+    {
+        noteData[i].time_counter = 0;
+    }
+    
+    //set the apps background to be black on startup
+    backgroundColour = 0;
+    
+    //set the instructions to be displayed on startup
+    showingInstructions = true;
+    
+    for(int i = 0; i < 200; i++){
+        lines[i].clear();
+    }
+    //read in configuration files
+    FILE *fp;
+    FILE *fp2;
+    fp = fopen("config.txt", "r");
+    if(fp == NULL){
+        printf("No such file\n");
+    }
+    else{
+        char srp[100];
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &measure);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &zoom);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &note);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &disap);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &hoola);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &img_size);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &shrink);
+        
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img9big);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra9maj);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img9small);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra9min);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img9dom);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra9dom);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img7big);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra7maj);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img7small);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra7min);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img7dom);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra7dom);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img3big);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra3maj);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img3small);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fra3min);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", imgdisaster);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fradis);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", imgpalin);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &frapal);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", candy);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &fracan);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", background);
+        printf("parse ended\n");
+    }
+    fclose(fp);
+}
+
 void clean(){
     for(int i = 0; i < 200; i++){
         lines[i].clear();
@@ -81,17 +214,23 @@ void clean(){
 }
 
 void ofApp::test_palindrome(int i){
+    //do re mi re do - like notes detection
+    //needs later part exactly replicated
+    
     if(order[i].st_note == order[i].ed_note){
         bool last = false;
         unsigned long ss = order[i].notes.size();
+        
         if(ss < 4)
+            //returns short instances
             return;
+
         for(int j = 0; j < ss; j++){
             if(order[i].notes[j] != order[i].notes[ss - j - 1])
                 return;
         }
         unsigned long svec = imgvec.size();
-        int newid = 2000 + order[i].notes.size() * 100 + order[i].st_note;
+        int newid = 2000 + (int)order[i].notes.size() * 100 + (int)order[i].st_note;
         for(int j = 0; j < svec; j++){
             if(imgvec[j].id == newid && imgvec[j].birth >= lines[order[i].st_note].back().op){
                 if(imgvec[j].live == 0)
@@ -105,6 +244,8 @@ void ofApp::test_palindrome(int i){
         if(last){
             return;
         }
+        //put image in to-print vector
+        
         img myimg;
         myimg.live = 1;
         myimg.birth = timer;
@@ -371,129 +512,6 @@ void ofApp::test_chord(){
     }
 }
 
-void ofApp::setup()
-{
-#ifdef TARGET_OSX
-    // Get the absolute location of the executable file in the bundle.
-    CFBundleRef appBundle     = CFBundleGetMainBundle();
-    CFURLRef    executableURL = CFBundleCopyExecutableURL(appBundle);
-    char execFile[4096];
-    if (CFURLGetFileSystemRepresentation(executableURL, TRUE, (UInt8 *)execFile, 4096))
-    {
-        // Strip out the filename to just get the path
-        string strExecFile = execFile;
-        unsigned long found = strExecFile.find_last_of("/");
-        string strPath = strExecFile.substr(0, found);
-        
-        // Change the working directory to that of the executable
-        if(-1 == chdir(strPath.c_str())) {
-            ofLog(OF_LOG_ERROR, "Unable to change working directory to executable's directory.");
-        }
-    }
-    else {
-        ofLog(OF_LOG_ERROR, "Unable to identify executable's directory.");
-    }
-    CFRelease(executableURL);
-#endif
-    ofSetVerticalSync(true);
-    ofSetLogLevel(OF_LOG_VERBOSE);
-    ofSetFrameRate(60);
-    
-    //Open a connection to the first available MIDI input
-    midiIn.openPort(0);
-
-    //Set this class to listen for incoming MIDI messages
-    midiIn.addListener(this);
-    
-    //initialise the note data array so that no circles will be drawn at startup
-    for (int i = 0; i < MAX_NUM_OF_NOTES; i++)
-    {
-        noteData[i].time_counter = 0;
-    }
-    
-    //set the apps background to be black on startup
-    backgroundColour = 0;
-    
-    //set the instructions to be displayed on startup
-    showingInstructions = true;
-    
-    for(int i = 0; i < 200; i++){
-        lines[i].clear();
-    }
-    //read in configuration files
-    FILE *fp;
-    FILE *fp2;
-    fp = fopen("config.txt", "r");
-    if(fp == NULL){
-        printf("No such file\n");
-    }
-    else{
-        char srp[100];
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &measure);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &zoom);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &note);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &disap);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &hoola);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &img_size);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &shrink);
-        
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%s", img9big);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra9maj);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%s", img9small);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra9min);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%s", img9dom);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra9dom);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%s", img7big);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra7maj);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%s", img7small);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra7min);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%s", img7dom);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra7dom);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%s", img3big);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra3maj);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%s", img3small);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra3min);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%s", imgdisaster);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fradis);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%s", imgpalin);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &frapal);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%s", candy);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fracan);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%s", background);
-        printf("parse ended\n");
-    }
-    fclose(fp);
-}
 
 //===========================================================================
 //The newMidiMessage() function is called each time the application receives

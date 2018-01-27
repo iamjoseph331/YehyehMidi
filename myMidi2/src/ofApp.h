@@ -33,12 +33,17 @@ public:
     void setup();
     void update();
     void test_chord();
+    void test_trio();
     void test_palindrome(int i);
     void test_motivation();
     void draw();
     void drawnote(int i, int alpha, int op, int ed, int vol);
     void exit();
     void keyPressed(int key);
+    
+    bool chord9test(int i, bool* kdown);
+    bool chord7test(int i, bool* kdown);
+    bool chord3test(int i, bool* kdown);
     
     //MIDI input callback function
     void newMidiMessage(ofxMidiMessage& eventArgs);
@@ -60,9 +65,10 @@ private:
     bool showingInstructions;
     
     //path of images
-    char img9big[50], img9small[50], img9dom[50], img7big[50], img7small[50], img7dom[50];
-    char img3big[50], img3small[50], imgdisaster[50];
-    char imgpalin[50], candy[50];
-    int fra9maj,fra9min,fra9dom,fra7maj,fra7min,fra7dom,fra3maj,fra3min,fradis,frapal,fracan;
+    char img9big[50], img9small[50], img9dom[50];
+    char img7big[50], img7small[50], img7dom[50], img7mmj[50], img7hdi[50], img7dim[50], img7aug[50], img7ado[50];
+    char img3big[50], img3small[50], img3dim[50], img3aug[50], imgdisaster[50];
+    char imgpalin[50], candy[50], imgtrio[50];
+    //int fra9maj,fra9min,fra9dom,fra7maj,fra7min,fra7dom,fra3maj,fra3min,fradis,frapal,fracan;
     char background[50] = "NONE";
 };

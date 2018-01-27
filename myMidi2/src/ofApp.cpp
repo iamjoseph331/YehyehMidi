@@ -6,20 +6,14 @@
 
 #include "ofApp.h"
 #include <stdio.h>
-#define img_dissap
+#define img_custom
+#define img_transparent
 //#define quarter
 //#define debug_motivation
-/*
-#define measure 10
-#define zoom    8
-#define note    120
-#define disap   2000
-#define hoola   1200
-#define shrink  4
-*/
+
 int measure = 10, zoom = 8, note = 120, disap = 2000, hoola = 1200;
 int img_size = 25, shrink = 4;
-int gap = 0;
+int gap = 20, layer = 3, trio_gap = 200;
 
 //===========================================================================
 //The setup() function is called once when the application is first launched.
@@ -27,24 +21,47 @@ int gap = 0;
 //initial state.
 
 int timer = 0;
+int imgswap_timer = 5;
 long long int last_note_timestamp = 0;
 long long int quant_melody = 50;
 int rasuto_noto = 0;
 bool flag_melody_line = false;
 bool sweet = false;
+int frames[20];
+int triobuf[200] = {0};
+int trio_candidate[200] = {0};
 
-int chord_type9[3][9] = {{0,4,7,11,14,12,16,19,23}, //big      9 chord
-                         {0,3,7,10,14,12,15,19,22}, //small    9 chord
-                         {0,4,7,10,14,12,16,19,22}};//dominant 9 chord
-int chord_type7[3][7] = {{0,4,7,11,12,16,19},       //big      7 chord
-                         {0,3,7,10,12,15,19},       //small    7 chord
-                         {0,4,7,10,12,15,19}};      //dominant 7 chord
-int chord_type3[2][5] = {{0,4,7,12,16},             //big      3 chord
-                         {0,3,7,12,15}};            //small    3 chord
+int chord_type9[3][9] = {{0,4,7,11,14,12,16,19,23}, //maj      9 chord
+                         {0,3,7,10,14,12,15,19,22}, //min      9 chord
+                         {0,4,7,10,14,12,16,19,22}  //dominant 9 chord
+};
+int chord_type7[8][7] = {{0,4,7,11,12,16,19},       //maj      7 chord
+                         {0,3,7,10,12,15,19},       //min      7 chord
+                         {0,4,7,10,12,15,19},       //dominant 7 chord
+                         {0,3,7,11,12,15,19},       //minmaj   7 chord
+                         {0,3,6,10,12,15,18},       //halfdim  7 chord
+                         {0,3,6, 9,12,15,18},       //dim      7 chord
+                         {0,4,8,11,12,16,20},       //aug      7 chord
+                         {0,4,8,10,12,16,18}        //augdom   7 chord
+};
+int chord_type3[4][5] = {{0,4,7,12,16},             //maj      3 chord
+                         {0,3,7,12,15},             //min      3 chord
+                         {0,4,8,12,16},             //aug      3 chord
+                         {0,3,6,12,15}              //dim      3 chord
+};
+
 
 bool record = false;
-bool peek = false;
 double alikeness = 0.0;
+
+enum{
+    maj9,min9,dom9,
+    maj7,min7,dom7,
+    mmj7,hdi7,dim7,aug7,ado7,
+    maj3,min3,aug3,dim3,
+    oth,pal,mot,can,
+    trio
+};
 
 struct opedvol{
     bool keyup = false;
@@ -70,12 +87,14 @@ struct img{
     int  size = 0;
     int  birth = 0;
     int  id = 0;
+    int  base_note = -1;
+    int  imgswap_timer = 0;
+    int  imgswap_id = 0;
 };
 
 vector <opedvol> lines[200];
 vector <Nset> order;
 vector <img> imgvec;
-
 
 void ofApp::setup()
 {
@@ -128,7 +147,6 @@ void ofApp::setup()
     }
     //read in configuration files
     FILE *fp;
-    FILE *fp2;
     fp = fopen("config.txt", "r");
     if(fp == NULL){
         printf("No such file\n");
@@ -152,48 +170,61 @@ void ofApp::setup()
         
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9big);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra9maj);
+        fscanf(fp, "%d", &frames[maj9]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9small);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra9min);
+        fscanf(fp, "%d", &frames[min9]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9dom);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra9dom);
+        fscanf(fp, "%d", &frames[dom9]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7big);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra7maj);
+        fscanf(fp, "%d", &frames[maj7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7small);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra7min);
+        fscanf(fp, "%d", &frames[min7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7dom);
+        fscanf(fp, "%d", &frames[dom7]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra7dom);
+        fscanf(fp, "%s", img7mmj);
+        fscanf(fp, "%d", &frames[mmj7]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img7hdi);
+        fscanf(fp, "%d", &frames[hdi7]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img7dim);
+        fscanf(fp, "%d", &frames[dim7]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img7aug);
+        fscanf(fp, "%d", &frames[aug7]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img7ado);
+        fscanf(fp, "%d", &frames[ado7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img3big);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra3maj);
+        fscanf(fp, "%d", &frames[maj3]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img3small);
+        fscanf(fp, "%d", &frames[min3]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fra3min);
+        fscanf(fp, "%s", img3dim);
+        fscanf(fp, "%d", &frames[dim3]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%s", img3aug);
+        fscanf(fp, "%d", &frames[aug3]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", imgdisaster);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fradis);
+        fscanf(fp, "%d", &frames[oth]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", imgpalin);
+        fscanf(fp, "%d", &frames[pal]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &frapal);
+        fscanf(fp, "%s", imgtrio);
+        fscanf(fp, "%d", &frames[trio]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", candy);
-        fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &fracan);
+        fscanf(fp, "%d", &frames[can]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", background);
         printf("parse ended\n");
@@ -258,6 +289,99 @@ void ofApp::test_palindrome(int i){
     }
 }
 
+void ofApp::test_trio(){
+    if(timer % 4 != 0){
+        for(int i = 0; i < 200; i++){
+            if(lines[i].size() == 0)continue;
+            if(lines[i].back().keyup == false){
+                triobuf[i] = 1;
+            }
+        }
+    }
+    else{
+        for(int i = 0; i < 199; i++){
+            //if exsist trio opening
+            if(triobuf[i] == 1 && triobuf[i+1] == 1){
+                //add into candidate list -- half note
+                trio_candidate[i] = 1;
+            }
+            if(triobuf[i] == 1 && triobuf[i+1] == 0 && triobuf[i+2] == 1){
+                //add into candidate list -- whole note
+                trio_candidate[i] = 2;
+            }
+        }
+        memset(triobuf,0,sizeof(triobuf));
+    }
+    //search through candidates
+    for(int i = 0; i < 200; i++){
+        //if exsist candidate
+        if(trio_candidate[i] != 0){
+            //expect note: i
+            if(trio_candidate[i] < 0){
+                if(lines[i].back().op > lines[i-trio_candidate[i]].back().op){
+                    trio_candidate[i] *= -1;
+                    //search through image vector
+                    unsigned long ss = imgvec.size();
+                    for (int j = 0; j < ss; j++){
+                        if(imgvec[j].id == trio && imgvec[j].base_note == i && imgvec[j].live == 1){
+                            //set birth to timer for not killing it
+                            imgvec[j].birth = timer;
+                            break;
+                        }
+                        if(j == ss-1){
+                            img myimg;
+                            myimg.base_note = i;
+                            myimg.birth = timer;
+                            myimg.id = trio;
+                            myimg.live = 1;
+                            myimg.path = imgtrio;
+                            myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
+                            myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
+                            myimg.posy /= layer;
+                            int imglayer = (layer * (myimg.base_note - 21) / 87);
+                            myimg.posy += imglayer * ofGetHeight() / layer;
+                            myimg.posy = ofGetHeight() - myimg.posy;
+                            myimg.size = 50;
+                            imgvec.push_back(myimg);
+                        }
+                    }
+                    if(ss == 0){
+                        img myimg;
+                        myimg.base_note = i;
+                        myimg.birth = timer;
+                        myimg.id = trio;
+                        myimg.live = 1;
+                        myimg.path = imgtrio;
+                        myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
+                        myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
+                        myimg.posy /= layer;
+                        int imglayer = (layer * (myimg.base_note - 21) / 87);
+                        myimg.posy += imglayer * ofGetHeight() / layer;
+                        myimg.posy = ofGetHeight() - myimg.posy;
+                        myimg.size = 50;
+                        imgvec.push_back(myimg);
+                    }
+                }
+            }
+            //expect note i + t_c[i]
+            else{
+                if(lines[i+trio_candidate[i]].back().op > lines[i].back().op){
+                    trio_candidate[i] *= -1;
+                    //search through image vector
+                    unsigned long ss = imgvec.size();
+                    for (int j = 0; j < ss; j++){
+                        if(imgvec[j].id == trio && imgvec[j].base_note == i && imgvec[j].live == 1){
+                            //set birth to timer for not killing it
+                            imgvec[j].birth = timer;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 void ofApp::test_motivation(){
     for(int i = 0; i < MAX_NUM_OF_NOTES - motivation.size(); i++){
         if(noteData[i].note_num == 0)
@@ -279,206 +403,275 @@ void ofApp::test_motivation(){
     }
 }
 
+bool ofApp::chord9test(int i, bool* kdown){
+    for(int j = 0; j < 3; j++){
+        int cnt = 0;
+        for(int k = 0; k < 5; k++){
+            // 9 chord test / trans
+            cnt = 0;
+            int endpt = 0;
+            for(int l = 0; l < 5; l++){ //note in chord
+                if(kdown[i + chord_type9[j][k+l] - chord_type9[j][k]] == 1){
+                    cnt += 1;
+                    if(cnt >= 5){
+                        endpt = l;
+                        break;
+                    }
+                }
+                else{
+                    cnt = 0;
+                }
+            }
+            
+            if(cnt >= 5){
+                //find success
+                img myimg;
+                switch(j){
+                    case 0:
+                        myimg.path = img9big;
+                        myimg.id = maj9;
+                        break;
+                    case 1:
+                        myimg.path = img9small;
+                        myimg.id = min9;
+                        break;
+                    case 2:
+                        myimg.path = img9dom;
+                        myimg.id = dom9;
+                        break;
+                    default:
+                        fprintf(stderr,"No such type, but why?\n");
+                        break;
+                }
+                //switch for different chords
+                int newid = myimg.id;
+                unsigned long ss = imgvec.size();
+                //id for each image -- unique
+                for(int m = 0; m < ss; m++){
+                    //note line (====) [img]
+                    if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
+                        if(imgvec[j].live == 0)
+                            imgvec[m].live = 1;
+                        return true;
+                    }
+                    else if(imgvec[m].base_note == i && timer - imgvec[m].birth <= gap){
+                        return true;
+                    }
+                }
+                myimg.base_note = i;
+                myimg.birth = timer;
+                myimg.id    = newid;
+                myimg.size  = lines[i + chord_type9[j][k+endpt] - chord_type9[j][k]].back().vol * img_size;
+                myimg.posx  = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
+                myimg.posy  = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
+                
+                myimg.posy /= layer;
+                int imglayer = (layer * (myimg.base_note - 21) / 87);
+                myimg.posy += imglayer * ofGetHeight() / layer;
+                myimg.posy = ofGetHeight() - myimg.posy;
+                imgvec.push_back(myimg);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+bool ofApp::chord7test(int i, bool* kdown){
+    for(int j = 0; j < 8; j++){
+        int cnt = 0;
+        int maxcnt = 0;
+        for(int k = 0; k < 4; k++){ // 7 chord test / trans
+            cnt = 0;
+            int endpt = 0;
+            for(int l = 0; l < 4; l++){// note in chord
+                if(kdown[i + chord_type7[j][k + l] - chord_type7[j][k]] == 1){
+                    cnt += 1;
+                    if(cnt >= 4){
+                        endpt = l;
+                        break;
+                    }
+                }
+                else{
+                    cnt = 0;
+                }
+            }
+            img myimg;
+            switch(j){
+                case 0:
+                    myimg.path = img7big;
+                    myimg.id = maj7;
+                    break;
+                case 1:
+                    myimg.path = img7small;
+                    myimg.id = min7;
+                    break;
+                case 2:
+                    myimg.path = img7dom;
+                    myimg.id = dom7;
+                    break;
+                case 3:
+                    myimg.path = img7mmj;
+                    myimg.id = mmj7;
+                    break;
+                case 4:
+                    myimg.path = img7hdi;
+                    myimg.id = hdi7;
+                    break;
+                case 5:
+                    myimg.path = img7dim;
+                    myimg.id = dim7;
+                    break;
+                case 6:
+                    myimg.path = img7aug;
+                    myimg.id = aug7;
+                    break;
+                case 7:
+                    myimg.path = img7ado;
+                    myimg.id = ado7;
+                    break;
+                default:
+                    fprintf(stderr,"No such type, but why?\n");
+                    break;
+            }
+            if(cnt >= 4){
+                unsigned long ss = imgvec.size();
+                int newid = myimg.id;
+                for(int m = 0; m < ss; m++){
+                    if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
+                        if(imgvec[j].live == 0)
+                            imgvec[m].live = 1;
+                        return true;
+                    }
+                    else if(imgvec[m].base_note == i && timer - imgvec[m].birth <= gap){
+                        return true;
+                    }
+                }
+                myimg.base_note = i;
+                myimg.birth = timer;
+                myimg.size = lines[i + chord_type7[j][k+endpt] - chord_type7[j][k]].back().vol * img_size;
+                myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
+                myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
+                myimg.posy /= layer;
+                int imglayer = (layer * (myimg.base_note - 21) / 87);
+                myimg.posy += imglayer * ofGetHeight() / layer;
+                myimg.posy = ofGetHeight() - myimg.posy;
+                imgvec.push_back(myimg);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+bool ofApp::chord3test(int i, bool* kdown){
+    for(int j = 0; j < 4; j++){
+        int cnt = 0;
+        int maxcnt = 0;
+        for(int k = 0; k < 3; k++){ // 3 chord test / trans
+            cnt = 0;
+            int endpt = 0;
+            for(int l = 0; l < 3; l++){// note in chord
+                if(kdown[i + chord_type3[j][k + l] - chord_type3[j][k]] == 1){
+                    cnt += 1;
+                    if(cnt >= 3){
+                        endpt = l;
+                        break;
+                    }
+                }
+                else{
+                    cnt = 0;
+                }
+            }
+            
+            img myimg;
+            switch(j){
+                case 0:
+                    myimg.path = img3big;
+                    myimg.id = maj3;
+                    break;
+                case 1:
+                    myimg.path = img3small;
+                    myimg.id = min3;
+                    break;
+                case 2:
+                    myimg.path = img3aug;
+                    myimg.id = aug3;
+                    break;
+                case 3:
+                    myimg.path = img3dim;
+                    myimg.id = dim3;
+                    break;
+                default:
+                    fprintf(stderr,"No such type, but why?\n");
+                    break;
+            }
+            if(cnt >= 3){
+                unsigned long ss = imgvec.size();
+                int newid = myimg.id;
+                for(int m = 0; m < ss; m++){
+                    if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
+                        if(imgvec[j].live == 0)
+                            imgvec[m].live = 1;
+                        return true;
+                    }
+                    else if(imgvec[m].base_note == i && timer - imgvec[m].birth <= gap){
+                        return true;
+                    }
+                }
+                myimg.base_note = i;
+                myimg.birth = timer;
+                myimg.size = lines[i + chord_type3[j][k+endpt] - chord_type3[j][k]].back().vol * img_size;
+                myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
+                myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
+                myimg.posy /= layer;
+                int imglayer = (layer * (myimg.base_note - 21) / 87);
+                myimg.posy += imglayer * ofGetHeight() / layer;
+                myimg.posy = ofGetHeight() - myimg.posy;
+                imgvec.push_back(myimg);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void ofApp::test_chord(){
+    //keyDown the keys pressed down
     bool kdown[200] = {0};
+    
+    // code for melody line
     for(int i = 0; i < 200; i++){
         if(lines[i].size() == 0)
             continue;
         if(lines[i].back().keyup == false)
             kdown[i] = 1;
     }
+    
     int downcount = 0;
     int dcnt = 0;
     int dd = 0;
+    
+    //search through every base note
     for(int i = 0; i < 200; i++){
         if(kdown[i] == 1){
             if(dd == 0) dd = i;
             downcount += 1;
             dcnt = i;
+            
             // 9 chord test
-            for(int j = 0; j < 3; j++){
-                int cnt = 0;
-                for(int k = 0; k < 5; k++){ // 9 chord test / trans
-                    cnt = 0;
-                    int endpt = 0;
-                    for(int l = 0; l < 5; l++){ //note in chord
-                        if(kdown[i + chord_type9[j][k+l] - chord_type9[j][k]] == 1){
-                            cnt += 1;
-                            if(cnt >= 5){
-                                endpt = l;
-                                break;
-                            }
-                        }
-                        else{
-                            cnt = 0;
-                        }
-                    }
-                    
-                    if(cnt >= 5){
-                        unsigned long ss = imgvec.size();
-                        int newid = 90000 + (k * 1000) + (j * 100) + i;
-                        for(int m = 0; m < ss; m++){
-                            if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
-                                if(imgvec[j].live == 0)
-                                    imgvec[m].live = 1;
-                                return;
-                            }
-                            else if(imgvec[m].id % 100 == i && timer - imgvec[m].birth <= gap){
-                                return;
-                            }
-                        }
-                        img myimg;
-                        switch(j){
-                            case 0:
-                                myimg.path = img9big;
-                                break;
-                            case 1:
-                                myimg.path = img9small;
-                                break;
-                            case 2:
-                                myimg.path = img9dom;
-                                break;
-                            default:
-                                fprintf(stderr,"No such type, but why?\n");
-                                break;
-                        }
-                        myimg.birth = timer;
-                        myimg.id = newid;
-                        myimg.size = lines[i + chord_type9[j][k+endpt] - chord_type9[j][k]].back().vol * img_size;
-                        myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
-                        myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
-                        myimg.posy /= 2;
-                        if(i < 80){
-                            myimg.posy += ofGetHeight()/2;
-                        }
-                        imgvec.push_back(myimg);
-                        return;
-                    }
-                }
+            if(chord9test(i, kdown)){
+                continue;
             }
             // 7 chord test
-            for(int j = 0; j < 3; j++){
-                int cnt = 0;
-                int maxcnt = 0;
-                for(int k = 0; k < 4; k++){ // 7 chord test / trans
-                    cnt = 0;
-                    int endpt = 0;
-                    for(int l = 0; l < 4; l++){// note in chord
-                        if(kdown[i + chord_type7[j][k + l] - chord_type7[j][k]] == 1){
-                            cnt += 1;
-                            if(cnt >= 4){
-                                endpt = l;
-                                break;
-                            }
-                        }
-                        else{
-                            cnt = 0;
-                        }
-                    }
-                    
-                    if(cnt >= 4){
-                        unsigned long ss = imgvec.size();
-                        int newid = 70000 + (k * 1000) + (j * 100) + i;
-                        for(int m = 0; m < ss; m++){
-                            if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
-                                if(imgvec[j].live == 0)
-                                    imgvec[m].live = 1;
-                                return;
-                            }
-                            else if(imgvec[m].id % 100 == i && timer - imgvec[m].birth <= gap){
-                                return;
-                            }
-
-                        }
-                        img myimg;
-                        switch(j){
-                            case 0:
-                                myimg.path = img7big;
-                                break;
-                            case 1:
-                                myimg.path = img7small;
-                                break;
-                            case 2:
-                                myimg.path = img7dom;
-                                break;
-                            default:
-                                fprintf(stderr,"No such type, but why?\n");
-                                break;
-                        }
-                        myimg.birth = timer;
-                        myimg.id = newid;
-                        myimg.size = lines[i + chord_type7[j][k+endpt] - chord_type7[j][k]].back().vol * img_size;
-                        myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
-                        myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
-                        myimg.posy /= 2;
-                        if(i < 80){
-                            myimg.posy += ofGetHeight()/2;
-                        }
-                        imgvec.push_back(myimg);
-                        return;
-                        }
-                }
+            if(chord7test(i, kdown)){
+                continue;
             }
             // 3 chord test
-            for(int j = 0; j < 2; j++){
-                int cnt = 0;
-                int maxcnt = 0;
-                for(int k = 0; k < 3; k++){ // 3 chord test / trans
-                    cnt = 0;
-                    int endpt = 0;
-                    for(int l = 0; l < 3; l++){// note in chord
-                        if(kdown[i + chord_type3[j][k + l] - chord_type3[j][k]] == 1){
-                            cnt += 1;
-                            if(cnt >= 3){
-                                endpt = l;
-                                break;
-                            }
-                        }
-                        else{
-                            cnt = 0;
-                        }
-                    }
-                    if(cnt >= 3){
-                        unsigned long ss = imgvec.size();
-                        int newid = 30000 + (k * 1000) + (j * 100) + i;
-                        for(int m = 0; m < ss; m++){
-                            if(imgvec[m].id == newid && imgvec[m].birth >= lines[i].back().op){
-                                if(imgvec[j].live == 0)
-                                    imgvec[m].live = 1;
-                                return;
-                            }
-                            else if(imgvec[m].id % 100 == i && timer - imgvec[m].birth <= gap){
-                                return;
-                            }
-                        }
-                        img myimg;
-                        switch(j){
-                            case 0:
-                                myimg.path = img3big;
-                                break;
-                            case 1:
-                                myimg.path = img3small;
-                                break;
-                            default:
-                                fprintf(stderr,"No such type, but why?\n");
-                                break;
-                        }
-                        myimg.birth = timer;
-                        myimg.id = newid;
-                        myimg.size = lines[i + chord_type3[j][k+endpt] - chord_type3[j][k]].back().vol * img_size;
-                        myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
-                        myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
-                        myimg.posy /= 2;
-                        if(i < 80){
-                            myimg.posy += ofGetHeight()/2;
-                        }
-                        imgvec.push_back(myimg);
-                        return;
-                    }
-                }
+            if(chord3test(i, kdown)){
+                continue;
             }
         }
     }
+    
     if(downcount > 4){
         img myimg;
         myimg.path = imgdisaster;
@@ -512,7 +705,6 @@ void ofApp::test_chord(){
     }
 }
 
-
 //===========================================================================
 //The newMidiMessage() function is called each time the application receives
 //a new MIDI message. For this application we use this function to set the
@@ -522,7 +714,7 @@ void ofApp::test_chord(){
 
 void ofApp::newMidiMessage (ofxMidiMessage& msg)
 {
-    //if we have received a note-on message
+    //if we have received a note-off message
     if (msg.status == MIDI_NOTE_OFF){
         //printf("Note %d off\n", msg.pitch);
         int p = msg.pitch;
@@ -762,9 +954,10 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
             ppp.x = (k / 10) % ofGetWidth();
             if(sweet){
                 ofImage cdy;
+                ofSetColor(255, 255, 255);
                 ofLoadImage(cdy, candy);
                 cdy.update();
-                cdy.draw(ppp, vol, vol);
+                cdy.draw(ppp, vol*3, vol*3);
             }
             else{
                 ofCircle(ppp,vol);
@@ -774,9 +967,10 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
         ppp.x = (k / 10) % ofGetWidth();
         if(sweet){
             ofImage cdy;
+            ofSetColor(255, 255, 255);
             ofLoadImage(cdy, candy);
             cdy.update();
-            cdy.draw(ppp, vol, vol);
+            cdy.draw(ppp, vol*3, vol*3);
         }
         else{
             ofCircle(ppp,vol);
@@ -789,11 +983,84 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
 
 void drawimage(int i){
     ofImage img;
-    ofLoadImage(img, imgvec[i].path);
+    //modify between image names
+    string s = imgvec[i].path;
+    if(s == "NONE"){
+        return;
+    }
+    s.insert(s.end()-4, '_');
+    s.insert(s.end()-4,'1'+imgvec[i].imgswap_id);
+    ofLoadImage(img, s.c_str());
     img.update();
     ofSetColor(255, 255, 255);
-    img.draw(imgvec[i].posx, imgvec[i].posy, imgvec[i].size, imgvec[i].size);
+    img.draw(imgvec[i].posx, imgvec[i].posy - imgvec[i].size, imgvec[i].size, imgvec[i].size);
     
+    if(frames[imgvec[i].id] != 1 && imgvec[i].imgswap_timer > imgswap_timer){
+        imgvec[i].imgswap_timer = 0;
+        imgvec[i].imgswap_id += 1;
+        /* Loop gif image*/
+        if(imgvec[i].imgswap_id >= frames[imgvec[i].id])
+            imgvec[i].imgswap_id = 0;
+    }
+    else{
+        imgvec[i].imgswap_timer++;
+    }
+}
+
+unsigned long image_fade(int i, unsigned long size_imgvec){
+    if(timer % shrink == 0){
+        imgvec[i].size -= 2;
+        imgvec[i].posx += 1;
+        imgvec[i].posy += 1;
+    }
+    if(imgvec[i].size <= 0 || imgvec[i].posy > ofGetHeight() || imgvec[i].imgswap_id >= 4){
+        imgvec.erase(imgvec.begin()+i);
+        i--;
+        size_imgvec--;
+    }
+    return size_imgvec;
+}
+
+unsigned long image_dissapear(int i, unsigned long size_imgvec){
+    if(imgvec[i].id == 3039751){
+        if(timer - imgvec[i].birth > disap){
+            imgvec[i].id = 3039752;
+        }
+        if(imgvec[i].live == 0)
+            imgvec[i].live = 1;
+    }
+    if(imgvec[i].live <= 0 || imgvec[i].posy > ofGetHeight() || imgvec[i].imgswap_id >= 4){
+        if(imgvec[i].live > -500){
+            printf("%d\n",imgvec[i].live);
+            imgvec[i].live -= 1;
+            return size_imgvec;
+        }
+        imgvec.erase(imgvec.begin()+i);
+        i--;
+        size_imgvec--;
+        return size_imgvec;
+    }
+    else{
+        imgvec[i].live = 0;
+    }
+    return size_imgvec;
+}
+
+unsigned long image_custom(int i, unsigned long size_imgvec){
+    if(timer % shrink == 0){
+        //    x0 x1
+        // y0
+        // y1
+        imgvec[i].posx += ((ofGetWidth()/2 - imgvec[i].posx) * 2 / imgvec[i].size);
+        imgvec[i].posy += ((ofGetHeight()/2 - imgvec[i].posy) * 2 / imgvec[i].size);
+        imgvec[i].size -= 2;
+    }
+    if(imgvec[i].size <= 0 || imgvec[i].posy > ofGetHeight() || imgvec[i].imgswap_id >= 4){
+        imgvec.erase(imgvec.begin()+i);
+        i--;
+        size_imgvec--;
+    }
+    return size_imgvec;
 }
 
 void ofApp::draw()
@@ -820,14 +1087,24 @@ void ofApp::draw()
         if(linsize == 0)continue;
         for (int j = 0; j < linsize; j++)
         {
-            int alpha;                                              //set transparency
+            //set transparency
+            int alpha;
+            //Detect: not the same note
             if(timer - lines[i][j].ed > disap){
                 alpha = 0;
             }
+            //Released note
             else if(lines[i][j].keyup == true){
                 alpha = 255 - (255 * (timer - lines[i][j].ed) / disap);
+                unsigned long ss = imgvec.size();
+                for(int k = 0; k < ss; k++){
+                    if(imgvec[k].base_note == i && imgvec[k].id != trio){
+                        imgvec[k].live = 0;
+                    }
+                }
             }
             
+            //draw note
             if( j == linsize - 1 && lines[i][j].keyup == false)
                 drawnote(i, 255, lines[i][j].op, timer, lines[i][j].vol / zoom);
             else
@@ -837,14 +1114,17 @@ void ofApp::draw()
             lines[i].erase(lines[i].begin());
         }
     }
-    if(peek){
-        for (int i = 0; i < MAX_NUM_OF_NOTES; i++){
-            printf("%d ",Notevec[i].note_num);
+    
+    unsigned long ss = imgvec.size();
+    for(int i = 0; i < ss; i++){
+        if(imgvec[i].id == trio && (timer - imgvec[i].birth > trio_gap)){
+            imgvec[i].live = 0;
         }
-        printf("\n");
-        peek = false;
     }
     
+    //test trio here
+    test_trio();
+    //test chord here
     test_chord();
     if(!record)
         test_motivation();
@@ -852,45 +1132,28 @@ void ofApp::draw()
     //draw image here
     unsigned long size_imgvec = imgvec.size();
     for(int i = 0; i < size_imgvec; i++){
+        #ifdef img_transparent
+        ofSetColor(255, 255, 255, 2*lines[imgvec[i].base_note].back().vol);
+        #endif
         drawimage(i);
+        //image dissapear after key lift
+        if(imgvec[i].live == 0){
+            #ifdef img_dissap
+            size_imgvec = image_dissapear(i, size_imgvec);
+            #endif
+            
+            //image fades/shrinks out
+            #ifdef img_fade
+            size_imgvec = image_fade(i, size_imgvec);
+            #endif
+            
+            #ifdef img_custom
+            size_imgvec = image_custom(i, size_imgvec);
+            #endif
+        }
         
-        #ifdef img_dissap
-        if(imgvec[i].id == 3039751){
-            if(timer - imgvec[i].birth > disap){
-                imgvec[i].id = 3039752;
-            }
-            if(imgvec[i].live == 0)
-                imgvec[i].live = 1;
-        }
-        if(imgvec[i].live <= 0){
-            if(imgvec[i].live > -500){
-                printf("%d\n",imgvec[i].live);
-                imgvec[i].live -= 1;
-                continue;
-            }
-            imgvec.erase(imgvec.begin()+i);
-            i--;
-            size_imgvec--;
-            continue;
-        }
-        else{
-            imgvec[i].live = 0;
-        }
-        #endif
-        #ifdef img_fade
-        if(timer % shrink == 0){
-            imgvec[i].size -= 2;
-            imgvec[i].posx += 1;
-            imgvec[i].posy += 1;
-        }
-        if(imgvec[i].size <= 0){
-            imgvec.erase(imgvec.begin()+i);
-            i--;
-            size_imgvec--;
-        }
-        #endif
     }
-    
+    //print note number for motivation recording
     #ifdef debug_motivation
     for(int i = 0; i < motivation.size(); i++){
         printf("%d ",motivation[i].note_num);
@@ -977,9 +1240,6 @@ void ofApp::keyPressed(int key)
             printf("End record\n");
         }
         record = !record;
-    }
-    else if(key == 'p'){
-        peek = true;
     }
 }
 

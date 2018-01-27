@@ -69,6 +69,5 @@ private:
     char img7big[50], img7small[50], img7dom[50], img7mmj[50], img7hdi[50], img7dim[50], img7aug[50], img7ado[50];
     char img3big[50], img3small[50], img3dim[50], img3aug[50], imgdisaster[50];
     char imgpalin[50], candy[50], imgtrio[50];
-    //int fra9maj,fra9min,fra9dom,fra7maj,fra7min,fra7dom,fra3maj,fra3min,fradis,frapal,fracan;
     char background[50] = "NONE";
 };

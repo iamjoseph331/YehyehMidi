@@ -6,12 +6,11 @@
 
 #include "ofApp.h"
 #include <stdio.h>
-#define img_custom
 #define img_transparent
 //#define quarter
 //#define debug_motivation
 
-int measure = 10, zoom = 8, note = 120, disap = 2000, hoola = 1200;
+int measure = 10, zoom = 8, note = 120, hoola = 1200;
 int img_size = 25, shrink = 4;
 int gap = 20, layer = 3, trio_gap = 200;
 
@@ -25,11 +24,12 @@ int imgswap_timer = 5;
 long long int last_note_timestamp = 0;
 long long int quant_melody = 50;
 int rasuto_noto = 0;
-bool flag_melody_line = false;
 bool sweet = false;
-int frames[20];
+int frames[30];
+int policy[30];
 int triobuf[200] = {0};
 int trio_candidate[200] = {0};
+int disap[5];
 
 int chord_type9[3][9] = {{0,4,7,11,14,12,16,19,23}, //maj      9 chord
                          {0,3,7,10,14,12,15,19,22}, //min      9 chord
@@ -90,6 +90,7 @@ struct img{
     int  base_note = -1;
     int  imgswap_timer = 0;
     int  imgswap_id = 0;
+    int  img_movement = 0;
 };
 
 vector <opedvol> lines[200];
@@ -160,71 +161,104 @@ void ofApp::setup()
         fscanf(fp, "%s", srp);
         fscanf(fp, "%d", &note);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d", &disap);
+        fscanf(fp, "%d", &disap[0]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &disap[1]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &disap[2]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &disap[3]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &disap[4]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%d", &hoola);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%d", &img_size);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%d", &shrink);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &gap);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &layer);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &trio_gap);
         
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9big);
         fscanf(fp, "%d", &frames[maj9]);
+        fscanf(fp, "%d", &policy[maj9]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9small);
         fscanf(fp, "%d", &frames[min9]);
+        fscanf(fp, "%d", &policy[min9]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9dom);
         fscanf(fp, "%d", &frames[dom9]);
+        fscanf(fp, "%d", &policy[dom9]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7big);
         fscanf(fp, "%d", &frames[maj7]);
+        fscanf(fp, "%d", &policy[maj7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7small);
         fscanf(fp, "%d", &frames[min7]);
+        fscanf(fp, "%d", &policy[min7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7dom);
         fscanf(fp, "%d", &frames[dom7]);
+        fscanf(fp, "%d", &policy[dom7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7mmj);
         fscanf(fp, "%d", &frames[mmj7]);
+        fscanf(fp, "%d", &policy[mmj7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7hdi);
         fscanf(fp, "%d", &frames[hdi7]);
+        fscanf(fp, "%d", &policy[hdi7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7dim);
         fscanf(fp, "%d", &frames[dim7]);
+        fscanf(fp, "%d", &policy[dim7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7aug);
         fscanf(fp, "%d", &frames[aug7]);
+        fscanf(fp, "%d", &policy[aug7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7ado);
         fscanf(fp, "%d", &frames[ado7]);
+        fscanf(fp, "%d", &policy[ado7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img3big);
         fscanf(fp, "%d", &frames[maj3]);
+        fscanf(fp, "%d", &policy[maj3]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img3small);
         fscanf(fp, "%d", &frames[min3]);
+        fscanf(fp, "%d", &policy[min3]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img3dim);
         fscanf(fp, "%d", &frames[dim3]);
+        fscanf(fp, "%d", &policy[dim3]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img3aug);
         fscanf(fp, "%d", &frames[aug3]);
+        fscanf(fp, "%d", &policy[aug3]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", imgdisaster);
         fscanf(fp, "%d", &frames[oth]);
+        fscanf(fp, "%d", &policy[oth]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", imgpalin);
         fscanf(fp, "%d", &frames[pal]);
+        fscanf(fp, "%d", &policy[pal]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", imgtrio);
         fscanf(fp, "%d", &frames[trio]);
+        fscanf(fp, "%d", &policy[trio]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", candy);
         fscanf(fp, "%d", &frames[can]);
+        fscanf(fp, "%d", &policy[can]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", background);
         printf("parse ended\n");
@@ -981,6 +1015,8 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
     //that the circle is fading out over time
 }
 
+inline int min(int a, int b){return a > b ? b : a;}
+
 void drawimage(int i){
     ofImage img;
     //modify between image names
@@ -993,6 +1029,10 @@ void drawimage(int i){
     ofLoadImage(img, s.c_str());
     img.update();
     ofSetColor(255, 255, 255);
+    #ifdef img_transparent
+    int alpha0 = 2 * lines[imgvec[i].base_note].back().vol;
+    ofSetColor(255, 255, 255, alpha0 - (alpha0 * min(disap[policy[imgvec[i].id]],timer-imgvec[i].birth) / disap[policy[imgvec[i].id]]));
+    #endif
     img.draw(imgvec[i].posx, imgvec[i].posy - imgvec[i].size, imgvec[i].size, imgvec[i].size);
     
     if(frames[imgvec[i].id] != 1 && imgvec[i].imgswap_timer > imgswap_timer){
@@ -1023,25 +1063,18 @@ unsigned long image_fade(int i, unsigned long size_imgvec){
 
 unsigned long image_dissapear(int i, unsigned long size_imgvec){
     if(imgvec[i].id == 3039751){
-        if(timer - imgvec[i].birth > disap){
+        if(timer - imgvec[i].birth > disap[policy[imgvec[i].id]]){
             imgvec[i].id = 3039752;
         }
         if(imgvec[i].live == 0)
             imgvec[i].live = 1;
     }
-    if(imgvec[i].live <= 0 || imgvec[i].posy > ofGetHeight() || imgvec[i].imgswap_id >= 4){
-        if(imgvec[i].live > -500){
-            printf("%d\n",imgvec[i].live);
-            imgvec[i].live -= 1;
-            return size_imgvec;
+    if(imgvec[i].live == 0){
+        if(timer - imgvec[i].birth > disap[policy[imgvec[i].id]]){
+            imgvec.erase(imgvec.begin()+i);
+            i--;
+            size_imgvec--;
         }
-        imgvec.erase(imgvec.begin()+i);
-        i--;
-        size_imgvec--;
-        return size_imgvec;
-    }
-    else{
-        imgvec[i].live = 0;
     }
     return size_imgvec;
 }
@@ -1055,7 +1088,55 @@ unsigned long image_custom(int i, unsigned long size_imgvec){
         imgvec[i].posy += ((ofGetHeight()/2 - imgvec[i].posy) * 2 / imgvec[i].size);
         imgvec[i].size -= 2;
     }
-    if(imgvec[i].size <= 0 || imgvec[i].posy > ofGetHeight() || imgvec[i].imgswap_id >= 4){
+    if(imgvec[i].size <= 0){
+        imgvec.erase(imgvec.begin()+i);
+        i--;
+        size_imgvec--;
+    }
+    return size_imgvec;
+}
+
+unsigned long image_custom2(int i, unsigned long size_imgvec){
+    if(timer % shrink == 0){
+        //    x0 x1
+        // y0
+        // y1
+        imgvec[i].posx += random() % (ofGetWidth() / disap[policy[imgvec[i].id]]);
+        imgvec[i].posy += ((ofGetHeight()/6 - imgvec[i].posy) * 2 / imgvec[i].size);
+        imgvec[i].size -= 2;
+    }
+    if(imgvec[i].size <= 0){
+        imgvec.erase(imgvec.begin()+i);
+        i--;
+        size_imgvec--;
+    }
+    return size_imgvec;
+}
+
+unsigned long image_custom3(int i, unsigned long size_imgvec){
+    if(timer % shrink == 0){
+        //    x0 x1
+        // y0
+        // y1
+        imgvec[i].posx += ofGetWidth() / disap[policy[imgvec[i].id]] ;
+        
+    }
+    if(imgvec[i].size <= 0 || imgvec[i].posx > ofGetWidth()){
+        imgvec.erase(imgvec.begin()+i);
+        i--;
+        size_imgvec--;
+    }
+    return size_imgvec;
+}
+
+unsigned long image_custom4(int i, unsigned long size_imgvec){
+    if(timer % shrink == 0){
+        //    x0 x1
+        // y0
+        // y1
+        imgvec[i].posx -= ofGetWidth() / disap[policy[imgvec[i].id]] ;
+    }
+    if(imgvec[i].size <= 0 || imgvec[i].posx <= 0){
         imgvec.erase(imgvec.begin()+i);
         i--;
         size_imgvec--;
@@ -1090,12 +1171,12 @@ void ofApp::draw()
             //set transparency
             int alpha;
             //Detect: not the same note
-            if(timer - lines[i][j].ed > disap){
+            if(timer - lines[i][j].ed > disap[0]){
                 alpha = 0;
             }
             //Released note
             else if(lines[i][j].keyup == true){
-                alpha = 255 - (255 * (timer - lines[i][j].ed) / disap);
+                alpha = 255 - (255 * (timer - lines[i][j].ed) / disap[0]);
                 unsigned long ss = imgvec.size();
                 for(int k = 0; k < ss; k++){
                     if(imgvec[k].base_note == i && imgvec[k].id != trio){
@@ -1110,7 +1191,7 @@ void ofApp::draw()
             else
                 drawnote(i, alpha, lines[i][j].op, lines[i][j].ed, lines[i][j].vol / zoom);
         }
-        if(timer - lines[i][0].ed > disap && lines[i][0].keyup == true){
+        if(timer - lines[i][0].ed > disap[0] && lines[i][0].keyup == true){
             lines[i].erase(lines[i].begin());
         }
     }
@@ -1132,11 +1213,31 @@ void ofApp::draw()
     //draw image here
     unsigned long size_imgvec = imgvec.size();
     for(int i = 0; i < size_imgvec; i++){
-        #ifdef img_transparent
-        ofSetColor(255, 255, 255, 2*lines[imgvec[i].base_note].back().vol);
-        #endif
         drawimage(i);
         //image dissapear after key lift
+        switch(policy[imgvec[i].id]){
+            case 1:
+                if(imgvec[i].live == 0)
+                    size_imgvec = image_dissapear(i, size_imgvec);
+                break;
+            case 2:
+                if(imgvec[i].live == 0)
+                    size_imgvec = image_custom(i, size_imgvec);
+                break;
+            case 3:
+                if(imgvec[i].live == 0)
+                    size_imgvec = image_custom2(i, size_imgvec);
+                break;
+            case 4:
+                if(imgvec[i].live == 0)
+                    size_imgvec = image_custom3(i, size_imgvec);
+                break;
+            default:
+                if(imgvec[i].live == 0)
+                    size_imgvec = image_custom4(i, size_imgvec);
+                break;
+        }
+        /*
         if(imgvec[i].live == 0){
             #ifdef img_dissap
             size_imgvec = image_dissapear(i, size_imgvec);
@@ -1150,7 +1251,7 @@ void ofApp::draw()
             #ifdef img_custom
             size_imgvec = image_custom(i, size_imgvec);
             #endif
-        }
+        }*/
         
     }
     //print note number for motivation recording

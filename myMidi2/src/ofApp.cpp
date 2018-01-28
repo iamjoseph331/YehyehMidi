@@ -27,6 +27,7 @@ int rasuto_noto = 0;
 bool sweet = false;
 int frames[30];
 int policy[30];
+int imgsize[30];
 int triobuf[200] = {0};
 int trio_candidate[200] = {0};
 int disap[5];
@@ -185,80 +186,61 @@ void ofApp::setup()
         
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9big);
-        fscanf(fp, "%d", &frames[maj9]);
-        fscanf(fp, "%d", &policy[maj9]);
+        fscanf(fp, "%d%d%d", &frames[maj9], &policy[maj9], &imgsize[maj9]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9small);
-        fscanf(fp, "%d", &frames[min9]);
-        fscanf(fp, "%d", &policy[min9]);
+        fscanf(fp, "%d%d%d", &frames[min9], &policy[min9], &imgsize[min9]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9dom);
-        fscanf(fp, "%d", &frames[dom9]);
-        fscanf(fp, "%d", &policy[dom9]);
+        fscanf(fp, "%d%d%d", &frames[dom9], &policy[dom9], &imgsize[dom9]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7big);
-        fscanf(fp, "%d", &frames[maj7]);
-        fscanf(fp, "%d", &policy[maj7]);
+        fscanf(fp, "%d%d%d", &frames[maj7], &policy[maj7], &imgsize[maj7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7small);
-        fscanf(fp, "%d", &frames[min7]);
-        fscanf(fp, "%d", &policy[min7]);
+        fscanf(fp, "%d%d%d", &frames[min7], &policy[min7], &imgsize[min7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7dom);
-        fscanf(fp, "%d", &frames[dom7]);
-        fscanf(fp, "%d", &policy[dom7]);
+        fscanf(fp, "%d%d%d", &frames[dom7], &policy[dom7], &imgsize[dom7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7mmj);
-        fscanf(fp, "%d", &frames[mmj7]);
-        fscanf(fp, "%d", &policy[mmj7]);
+        fscanf(fp, "%d%d%d", &frames[mmj7], &policy[mmj7], &imgsize[mmj7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7hdi);
-        fscanf(fp, "%d", &frames[hdi7]);
-        fscanf(fp, "%d", &policy[hdi7]);
+        fscanf(fp, "%d%d%d", &frames[hdi7], &policy[hdi7], &imgsize[hdi7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7dim);
-        fscanf(fp, "%d", &frames[dim7]);
-        fscanf(fp, "%d", &policy[dim7]);
+        fscanf(fp, "%d%d%d", &frames[dim7], &policy[dim7], &imgsize[dim7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7aug);
-        fscanf(fp, "%d", &frames[aug7]);
-        fscanf(fp, "%d", &policy[aug7]);
+        fscanf(fp, "%d%d%d", &frames[aug7], &policy[aug7], &imgsize[aug7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img7ado);
-        fscanf(fp, "%d", &frames[ado7]);
-        fscanf(fp, "%d", &policy[ado7]);
+        fscanf(fp, "%d%d%d", &frames[ado7], &policy[ado7], &imgsize[ado7]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img3big);
-        fscanf(fp, "%d", &frames[maj3]);
-        fscanf(fp, "%d", &policy[maj3]);
+        fscanf(fp, "%d%d%d", &frames[maj3], &policy[maj3], &imgsize[maj3]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img3small);
-        fscanf(fp, "%d", &frames[min3]);
-        fscanf(fp, "%d", &policy[min3]);
+        fscanf(fp, "%d%d%d", &frames[min3], &policy[min3], &imgsize[min3]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img3dim);
-        fscanf(fp, "%d", &frames[dim3]);
-        fscanf(fp, "%d", &policy[dim3]);
+        fscanf(fp, "%d%d%d", &frames[dim3], &policy[dim3], &imgsize[dim3]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img3aug);
-        fscanf(fp, "%d", &frames[aug3]);
-        fscanf(fp, "%d", &policy[aug3]);
+        fscanf(fp, "%d%d%d", &frames[aug3], &policy[aug3], &imgsize[aug3]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", imgdisaster);
-        fscanf(fp, "%d", &frames[oth]);
-        fscanf(fp, "%d", &policy[oth]);
+        fscanf(fp, "%d%d%d", &frames[oth], &policy[oth], &imgsize[oth]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", imgpalin);
-        fscanf(fp, "%d", &frames[pal]);
-        fscanf(fp, "%d", &policy[pal]);
+        fscanf(fp, "%d%d%d", &frames[pal], &policy[pal], &imgsize[pal]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", imgtrio);
-        fscanf(fp, "%d", &frames[trio]);
-        fscanf(fp, "%d", &policy[trio]);
+        fscanf(fp, "%d%d%d", &frames[trio], &policy[trio], &imgsize[trio]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", candy);
-        fscanf(fp, "%d", &frames[can]);
-        fscanf(fp, "%d", &policy[can]);
+        fscanf(fp, "%d%d%d", &frames[can], &policy[can], &imgsize[can]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", background);
         printf("parse ended\n");
@@ -317,7 +299,8 @@ void ofApp::test_palindrome(int i){
         myimg.path = imgpalin;
         myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
         myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
-        myimg.size = order[i].notes.size() * 4 * img_size * 1.5;
+        //myimg.size = order[i].notes.size() * 4 * img_size * 1.5;
+        myimg.size  = imgsize[myimg.id];
         myimg.id = newid;
         imgvec.push_back(myimg);
     }
@@ -375,7 +358,7 @@ void ofApp::test_trio(){
                             int imglayer = (layer * (myimg.base_note - 21) / 87);
                             myimg.posy += imglayer * ofGetHeight() / layer;
                             myimg.posy = ofGetHeight() - myimg.posy;
-                            myimg.size = 50;
+                            myimg.size  = imgsize[myimg.id];
                             imgvec.push_back(myimg);
                         }
                     }
@@ -392,7 +375,7 @@ void ofApp::test_trio(){
                         int imglayer = (layer * (myimg.base_note - 21) / 87);
                         myimg.posy += imglayer * ofGetHeight() / layer;
                         myimg.posy = ofGetHeight() - myimg.posy;
-                        myimg.size = 50;
+                        myimg.size  = imgsize[myimg.id];
                         imgvec.push_back(myimg);
                     }
                 }
@@ -495,7 +478,8 @@ bool ofApp::chord9test(int i, bool* kdown){
                 myimg.base_note = i;
                 myimg.birth = timer;
                 myimg.id    = newid;
-                myimg.size  = lines[i + chord_type9[j][k+endpt] - chord_type9[j][k]].back().vol * img_size;
+                //myimg.size  = lines[i + chord_type9[j][k+endpt] - chord_type9[j][k]].back().vol * img_size;
+                myimg.size  = imgsize[myimg.id];
                 myimg.posx  = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
                 myimg.posy  = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
                 
@@ -582,7 +566,8 @@ bool ofApp::chord7test(int i, bool* kdown){
                 }
                 myimg.base_note = i;
                 myimg.birth = timer;
-                myimg.size = lines[i + chord_type7[j][k+endpt] - chord_type7[j][k]].back().vol * img_size;
+                //myimg.size = lines[i + chord_type7[j][k+endpt] - chord_type7[j][k]].back().vol * img_size;
+                myimg.size  = imgsize[myimg.id];
                 myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
                 myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
                 myimg.posy /= layer;
@@ -653,7 +638,8 @@ bool ofApp::chord3test(int i, bool* kdown){
                 }
                 myimg.base_note = i;
                 myimg.birth = timer;
-                myimg.size = lines[i + chord_type3[j][k+endpt] - chord_type3[j][k]].back().vol * img_size;
+                //myimg.size = lines[i + chord_type3[j][k+endpt] - chord_type3[j][k]].back().vol * img_size;
+                myimg.size  = imgsize[myimg.id];
                 myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
                 myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
                 myimg.posy /= layer;
@@ -723,7 +709,7 @@ void ofApp::test_chord(){
                 return;
             }
         }
-        myimg.size = 120;
+        myimg.size  = imgsize[myimg.id];
         if(lines[dcnt].back().vol > 75){
             myimg.posx = (ofGetHeight() / 3) + (rand() % (ofGetHeight() / 3));
         }
@@ -1031,7 +1017,7 @@ void drawimage(int i){
     ofSetColor(255, 255, 255);
     #ifdef img_transparent
     int alpha0 = 2 * lines[imgvec[i].base_note].back().vol;
-    ofSetColor(255, 255, 255, alpha0 - (alpha0 * min(disap[policy[imgvec[i].id]],timer-imgvec[i].birth) / disap[policy[imgvec[i].id]]));
+    ofSetColor(255, 255, 255, alpha0 - (alpha0 * min(disap[policy[imgvec[i].id]],timer-imgvec[i].birth) / (6*disap[policy[imgvec[i].id] - 1])));
     #endif
     img.draw(imgvec[i].posx, imgvec[i].posy - imgvec[i].size, imgvec[i].size, imgvec[i].size);
     
@@ -1063,14 +1049,14 @@ unsigned long image_fade(int i, unsigned long size_imgvec){
 
 unsigned long image_dissapear(int i, unsigned long size_imgvec){
     if(imgvec[i].id == 3039751){
-        if(timer - imgvec[i].birth > disap[policy[imgvec[i].id]]){
+        if(timer - imgvec[i].birth > disap[policy[imgvec[i].id] - 1]){
             imgvec[i].id = 3039752;
         }
         if(imgvec[i].live == 0)
             imgvec[i].live = 1;
     }
     if(imgvec[i].live == 0){
-        if(timer - imgvec[i].birth > disap[policy[imgvec[i].id]]){
+        if(timer - imgvec[i].birth > disap[policy[imgvec[i].id] - 1]){
             imgvec.erase(imgvec.begin()+i);
             i--;
             size_imgvec--;
@@ -1097,14 +1083,13 @@ unsigned long image_custom(int i, unsigned long size_imgvec){
 }
 
 unsigned long image_custom2(int i, unsigned long size_imgvec){
-    if(timer % shrink == 0){
-        //    x0 x1
-        // y0
-        // y1
-        imgvec[i].posx += random() % (ofGetWidth() / disap[policy[imgvec[i].id]]);
-        imgvec[i].posy += ((ofGetHeight()/6 - imgvec[i].posy) * 2 / imgvec[i].size);
-        imgvec[i].size -= 2;
-    }
+    //    x0 x1
+    // y0
+    // y1
+    if(timer % 90 == 0)
+        imgvec[i].posx += (random() % (6 * ofGetWidth() / disap[policy[imgvec[i].id] - 1])) - (3 * ofGetWidth() / disap[policy[imgvec[i].id] - 1]);
+    imgvec[i].posy += ((ofGetHeight()/6 - imgvec[i].posy) * 2 / imgvec[i].size);
+    imgvec[i].size -= 2;
     if(imgvec[i].size <= 0){
         imgvec.erase(imgvec.begin()+i);
         i--;
@@ -1114,13 +1099,11 @@ unsigned long image_custom2(int i, unsigned long size_imgvec){
 }
 
 unsigned long image_custom3(int i, unsigned long size_imgvec){
-    if(timer % shrink == 0){
-        //    x0 x1
-        // y0
-        // y1
-        imgvec[i].posx += ofGetWidth() / disap[policy[imgvec[i].id]] ;
-        
-    }
+    //    x0 x1
+    // y0
+    // y1
+    int delta = ofGetWidth() / disap[policy[imgvec[i].id] - 1];
+    imgvec[i].posx += delta;
     if(imgvec[i].size <= 0 || imgvec[i].posx > ofGetWidth()){
         imgvec.erase(imgvec.begin()+i);
         i--;
@@ -1130,12 +1113,11 @@ unsigned long image_custom3(int i, unsigned long size_imgvec){
 }
 
 unsigned long image_custom4(int i, unsigned long size_imgvec){
-    if(timer % shrink == 0){
-        //    x0 x1
-        // y0
-        // y1
-        imgvec[i].posx -= ofGetWidth() / disap[policy[imgvec[i].id]] ;
-    }
+    //    x0 x1
+    // y0
+    // y1
+    int delta = ofGetWidth() / disap[policy[imgvec[i].id] - 1];
+    imgvec[i].posx -= delta;
     if(imgvec[i].size <= 0 || imgvec[i].posx <= 0){
         imgvec.erase(imgvec.begin()+i);
         i--;

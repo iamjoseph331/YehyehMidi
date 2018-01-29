@@ -6,36 +6,38 @@ SET_DISAPPEAR_TIME2:  300
 SET_DISAPPEAR_TIME3:  300
 SET_DISAPPEAR_TIME4:  300
 SET_DISAPPEAR_TIME5:  300
+SET_DISAPPEAR_TIME6: 2000
 SET_PLINDROME_LAST:  1202
 SET_IMAGE_SIZE:         3
 SET_SHRINK_SPEED:       1
 SET_CHORD_GAP:	       20
 SET_LAYERS:	        3
 SET_TRIO_GAP:	      200
-PATH_9_CHORD_MAJ:      NONE		1	1	50
-PATH_9_CHORD_MIN:      NONE		1	1	50
-PATH_9_CHORD_DOMINANT: NONE		1	1	50
-PATH_7_CHORD_MAJ:      NONE		1	1	50
-PATH_7_CHORD_MIN:      NONE		1	1	50
-PATH_7_CHORD_DOMINANT: giftest.png	4	1	50	
-PATH_7_CHORD_MINMAJ:   NONE		1	1	50
-PATH_7_CHORD_HALFDIM:  NONE		1	1	50
-PATH_7_CHORD_DIM:      giftest.png	4	1	50
-PATH_7_CHORD_AUGMAJ:   NONE		1	1	50
-PATH_7_CHORD_AUGDOM:   NONE		1	1	50
-PATH_3_CHORD_MAJ:      3maj.png      	1	1	50
-PATH_3_CHORD_MIN:      3min.png		1	1	50
-PATH_3_CHORD_DIM:      3dim.png	        1	1	50
-PATH_3_CHORD_AUG:      3aug.png		1	1	50
-PATH_CHORD_OTHER:      NONE		1	1	50
-PATH_PALINDROME:       NONE		1	1	50
-PATH_TRIO	       3good.jpg	1	2	250
-PATH_NOTE:             NONE		1	1	50
+PATH_9_CHORD_MAJ:      NONE		1	1	4	1
+PATH_9_CHORD_MIN:      NONE		1	1	4	1
+PATH_9_CHORD_DOMINANT: NONE		1	1	4	1
+PATH_7_CHORD_MAJ:      3good.jpg	1	1	4	1
+PATH_7_CHORD_MIN:      NONE		1	1	4	1
+PATH_7_CHORD_DOMINANT: giftest.png	4	1	4	1
+PATH_7_CHORD_MINMAJ:   NONE		1	1	4	1
+PATH_7_CHORD_HALFDIM:  NONE		1	1	4	1
+PATH_7_CHORD_DIM:      giftest.png	4	1	4	1
+PATH_7_CHORD_AUGMAJ:   NONE		1	1	4	1
+PATH_7_CHORD_AUGDOM:   NONE		1	1	4	1
+PATH_3_CHORD_MAJ:      3maj.png      	1	1	4	1
+PATH_3_CHORD_MIN:      3min.png		1	1	4	1	
+PATH_3_CHORD_DIM:      3dim.png	        1	1	4	1
+PATH_3_CHORD_AUG:      3aug.png		1	1	4	1
+PATH_CHORD_OTHER:      NONE		1	1	4	1
+PATH_PALINDROME:       NONE		1	1	4	1
+PATH_TRIO	       3good.jpg	1	6	4	1
+PATH_NOTE:             NONE		1	1	4	1
 PATH_BACKGROUND:       NONE
 
-*			      	     frames   policy image size
+*			      	     frames   policy   size    vol_s
 *image movement policy: 1 - disappear
 			2 - shrink to center
 			3 - shrink to skyrim
 			4 - move to right
 			5 - move to left
+			6 - drop

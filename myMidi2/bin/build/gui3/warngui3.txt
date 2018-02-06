@@ -1,0 +1,13 @@
+missing module named nt - imported by os, shutil, ntpath, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py
+missing module named org - imported by pickle, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py
+excluded module named _frozen_importlib - imported by importlib, importlib.abc, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py
+missing module named _frozen_importlib_external - imported by importlib._bootstrap, importlib, importlib.abc, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py
+missing module named _winreg - imported by platform, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py
+missing module named java - imported by platform, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py
+missing module named 'java.lang' - imported by platform, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py, xml.sax._exceptions
+missing module named vms_lib - imported by platform, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py
+missing module named winreg - imported by platform, mimetypes, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py, urllib.request
+missing module named 'org.python' - imported by copy, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py, xml.sax
+missing module named msvcrt - imported by subprocess, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py, getpass
+missing module named _winapi - imported by subprocess, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py
+missing module named _dummy_threading - imported by dummy_threading, /Users/home/scrap_files/programming exercises/yehMidi/myMidi2/bin/gui3.py

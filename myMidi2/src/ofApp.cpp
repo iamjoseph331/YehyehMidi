@@ -306,7 +306,7 @@ void ofApp::test_palindrome(int i){
         if(volsiz[pal] == 1)
             myimg.size = (int)order[i].notes.size() * 6 * myimg.size;
         myimg.id = pal;
-        myimg.base_note = i;
+        myimg.base_note = order[i].st_note;
         imgvec.push_back(myimg);
     }
 }
@@ -690,10 +690,14 @@ void ofApp::test_chord(){
     //search through every base note
     for(int i = 0; i < 200; i++){
         if(kdown[i] == 1){
-            if(dd == 0) dd = i;
+            if(dd == 0){
+                dd = i;
+            }
             downcount += 1;
             dcnt = i;
-            
+            if(downcount >= 6){
+                break;
+            }
             // 9 chord test
             if(chord9test(i, kdown)){
                 continue;
@@ -709,34 +713,26 @@ void ofApp::test_chord(){
         }
     }
     
-    if(downcount > 4){
+    if(downcount >= 6){
         img myimg;
         myimg.path = imgdisaster;
         myimg.birth = timer;
-        myimg.id = 3039751;
+        myimg.id = oth;
+        myimg.base_note = dd;
         unsigned long ss = imgvec.size();
-        int newid = 3039751;
+        int newid = myimg.id;
         for(int m = 0; m < ss; m++){
             if(dd == 0)
                 break;
             if(imgvec[m].id == newid && imgvec[m].birth >= lines[dd].back().op){
                 return;
             }
-            else if(imgvec[m].id % 100 == dd && timer - imgvec[m].birth <= gap){
+            else if(imgvec[m].base_note == myimg.base_note && timer - imgvec[m].birth <= gap){
                 return;
             }
         }
         myimg.size  = imgsize[myimg.id];
-        if(lines[dcnt].back().vol > 75){
-            myimg.posx = (ofGetHeight() / 3) + (rand() % (ofGetHeight() / 3));
-        }
-        else if(lines[dcnt].back().vol > 50){
-            myimg.posx = (2 * ofGetHeight() / 3) + (rand() % (ofGetHeight() / 3));
-        }
-        else{
-            myimg.posx = (ofGetHeight() / 3) + (rand() % (ofGetHeight() / 3));
-        }
-        
+        myimg.posx = rand() % ofGetHeight();
         myimg.posy = rand() % ofGetWidth();
         imgvec.push_back(myimg);
     }
@@ -1033,12 +1029,13 @@ void drawimage(int i){
     img.update();
     ofSetColor(255, 255, 255);
     #ifdef img_transparent
+   
     int alpha0 = 2 * lines[imgvec[i].base_note].back().vol;
     int alpha2 = alpha0 - (alpha0 * min(disap[policy[imgvec[i].id]-1],timer-imgvec[i].birth) / (disap[policy[imgvec[i].id] - 1]));
     ofSetColor(255, 255, 255, alpha2);
     #endif
     img.draw(imgvec[i].posx, imgvec[i].posy - imgvec[i].size, imgvec[i].size, imgvec[i].size);
-    
+ 
     if(frames[imgvec[i].id] != 1 && imgvec[i].imgswap_timer > imgswap_timer){
         imgvec[i].imgswap_timer = 0;
         imgvec[i].imgswap_id += 1;

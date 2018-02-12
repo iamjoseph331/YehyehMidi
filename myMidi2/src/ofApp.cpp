@@ -26,11 +26,10 @@ long long int quant_melody = 50;
 int rasuto_noto = 0;
 bool sweet = false;
 int frames[30];
+int trill[200];
 int policy[30];
 int imgsize[30];
 int volsiz[30];
-int triobuf[200] = {0};
-int trio_candidate[200] = {0};
 int disap[6];
 
 int chord_type9[3][9] = {{0,4,7,11,14,12,16,19,23}, //maj      9 chord
@@ -57,12 +56,12 @@ bool record = false;
 double alikeness = 0.0;
 
 enum{
+    trio,
     maj9,min9,dom9,
     maj7,min7,dom7,
     mmj7,hdi7,dim7,aug7,ado7,
     maj3,min3,aug3,dim3,
     oth,pal,mot,can,
-    trio
 };
 
 struct opedvol{
@@ -263,6 +262,29 @@ void clean(){
     return;
 }
 
+// small 9chord priority > 7chord > 3chord big
+bool check_collision(int base, int id){
+    unsigned long ss = imgvec.size();
+    for(int i = 0; i < ss; i++){
+        //priority block
+        if(imgvec[i].base_note == base && imgvec[i].birth > timer - 200 ){
+            if(imgvec[i].id > id){
+                imgvec.erase(imgvec.begin()+i);
+                ss--;
+                i--;
+            }
+            else{
+                return true;
+            }
+        }
+        //generated at the same time
+        if(lines[base].back().op - imgvec[i].birth < 30){
+            return true;
+        }
+    }
+    return false;
+}
+
 void ofApp::test_palindrome(int i){
     //do re mi re do - like notes detection
     //needs later part exactly replicated
@@ -271,7 +293,7 @@ void ofApp::test_palindrome(int i){
         bool last = false;
         unsigned long ss = order[i].notes.size();
         
-        if(ss < 4)
+        if(ss <= 4)
             //returns short instances
             return;
 
@@ -280,9 +302,8 @@ void ofApp::test_palindrome(int i){
                 return;
         }
         unsigned long svec = imgvec.size();
-        int newid = pal;
         for(int j = 0; j < svec; j++){
-            if(imgvec[j].id == newid && imgvec[j].birth >= lines[order[i].st_note].back().op){
+            if(imgvec[j].id == pal && imgvec[j].birth >= lines[order[i].st_note].back().op){
                 if(imgvec[j].live == 0)
                     imgvec[j].live = 1;
                 return;
@@ -294,12 +315,17 @@ void ofApp::test_palindrome(int i){
         if(last){
             return;
         }
+        /*/smash
+        if(lines[order[i].st_note][lines[order[i].st_note].size()-2].op >= lines[order[i].notes[(ss+1)/2]].back().op || lines[order[i].notes[(ss+1)/2]].back().op >= lines[order[i].ed_note].back().op){
+            return;
+        }*/
         //put image in to-print vector
         
         img myimg;
         myimg.live = 1;
         myimg.birth = timer;
         myimg.path = imgpalin;
+        printf("%s\n",imgpalin);
         myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
         myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
         myimg.size  = imgsize[myimg.id];
@@ -307,110 +333,63 @@ void ofApp::test_palindrome(int i){
             myimg.size = (int)order[i].notes.size() * 6 * myimg.size;
         myimg.id = pal;
         myimg.base_note = order[i].st_note;
-        imgvec.push_back(myimg);
+        if(check_collision(myimg.base_note, myimg.id) == false)
+            imgvec.push_back(myimg);
     }
 }
 
 void ofApp::test_trio(){
-    if(timer % 300 != 0){
-        for(int i = 0; i < 200; i++){
-            if(lines[i].size() == 0)continue;
-            if(lines[i].back().keyup == false){
-                triobuf[i] = 1;
-            }/*
-            if(lines[i].back().keyup == true && triobuf[i] == -1){
-                triobuf[i] = 1;
-            }*/
-        }
-    }
-    else{
-        for(int i = 0; i < 199; i++){
-            //if exsist trio opening
-            if(triobuf[i] == 1 && triobuf[i+1] == 1){
-                //add into candidate list -- half note
-                trio_candidate[i] = 1;
-            }
-            if(triobuf[i] == 1 && triobuf[i+1] == 0 && triobuf[i+2] == 1){
-                //add into candidate list -- whole note
-                trio_candidate[i] = 2;
-            }
-        }
-        for(int i = 0; i < 200; i++){
-            triobuf[i] = 0;
-        }
-    }
-    //search through candidates
     for(int i = 0; i < 200; i++){
-        //if exsist candidate
-        if(trio_candidate[i] != 0){
-            //expect note: i
-            if(trio_candidate[i] < 0){
-                if(lines[i].back().op > lines[i-trio_candidate[i]].back().op){
-                    trio_candidate[i] *= -1;
-                    //search through image vector
-                    unsigned long ss = imgvec.size();
-                    for (int j = 0; j < ss; j++){
-                        if(imgvec[j].id == trio && imgvec[j].base_note == i && imgvec[j].live == 1){
-                            //set birth to timer for not killing it
-                            imgvec[j].birth = timer;
-                            break;
-                        }
-                        if(j == ss-1){
-                            img myimg;
-                            myimg.base_note = i;
-                            myimg.birth = timer;
-                            myimg.id = trio;
-                            myimg.live = 1;
-                            myimg.path = imgtrio;
-                            myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
-                            myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
-                            myimg.posy /= layer;
-                            int imglayer = (layer * (myimg.base_note - 21) / 87);
-                            myimg.posy += imglayer * ofGetHeight() / layer;
-                            myimg.posy = ofGetHeight() - myimg.posy;
-                            myimg.size = imgsize[myimg.id];
-                            if(volsiz[myimg.id] == 1)
-                                myimg.size = lines[myimg.base_note].back().vol * myimg.size;
-                            imgvec.push_back(myimg);
-                        }
-                    }
-                    if(ss == 0){
-                        img myimg;
-                        myimg.base_note = i;
-                        myimg.birth = timer;
-                        myimg.id = trio;
-                        myimg.live = 1;
-                        myimg.path = imgtrio;
-                        myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
-                        myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
-                        myimg.posy /= layer;
-                        int imglayer = (layer * (myimg.base_note - 21) / 87);
-                        myimg.posy += imglayer * ofGetHeight() / layer;
-                        myimg.posy = ofGetHeight() - myimg.posy;
-                        myimg.size  = imgsize[myimg.id];
-                        if(volsiz[myimg.id] == 1)
-                            myimg.size = lines[myimg.base_note].back().vol * myimg.size;
-                        imgvec.push_back(myimg);
-                    }
-                }
-            }
-            //expect note i + t_c[i]
-            else{
-                if(lines[i+trio_candidate[i]].back().op > lines[i].back().op){
-                    trio_candidate[i] *= -1;
-                    //search through image vector
-                    unsigned long ss = imgvec.size();
-                    for (int j = 0; j < ss; j++){
-                        if(imgvec[j].id == trio && imgvec[j].base_note == i && imgvec[j].live == 1){
-                            //set birth to timer for not killing it
-                            imgvec[j].birth = timer;
-                            break;
-                        }
-                    }
+        if(lines[i].size() > 0 && lines[i].back().keyup == false){
+            unsigned long ss = imgvec.size();
+            for(int j = 0; j < ss; j++){
+                if(imgvec[j].id == trio && imgvec[j].base_note == i && imgvec[j].live == 1){
+                    imgvec[j].birth = timer - 30;
                 }
             }
         }
-        //if exsist candidate
+    }
+    if(timer % 600 == 0){
+        for(int i = 0; i < 198; i++){
+            bool flag = false;
+            if(trill[i] >= 3 && trill[i+1] >= 3){
+                flag = true;
+            }
+            if(trill[i] >= 3 && trill[i+2] >= 3){
+                flag = true;
+            }
+            if(flag){
+                unsigned long ss = imgvec.size();
+                bool flag2 = false;
+                for(int j = 0; j < ss; j++){
+                    if(imgvec[j].id == trio && imgvec[j].base_note == i && imgvec[j].live == 1){
+                        flag2 = true;
+                    }
+                }
+                if(flag2){
+                    continue;
+                }
+                img myimg;
+                myimg.base_note = i;
+                myimg.birth = timer;
+                myimg.id = trio;
+                myimg.live = 1;
+                myimg.path = imgtrio;
+                myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
+                myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
+                myimg.posy /= layer;
+                int imglayer = (layer * (myimg.base_note - 21) / 87);
+                myimg.posy += imglayer * ofGetHeight() / layer;
+                myimg.posy = ofGetHeight() - myimg.posy;
+                myimg.size = imgsize[myimg.id];
+                if(volsiz[myimg.id] == 1)
+                    myimg.size = lines[myimg.base_note].back().vol * myimg.size;
+                imgvec.push_back(myimg);
+            }
+        }
+        for(int i = 0; i < 200; i++){
+            trill[i] = 0;
+        }
     }
 }
 
@@ -502,7 +481,8 @@ bool ofApp::chord9test(int i, bool* kdown){
                 int imglayer = (layer * (myimg.base_note - 21) / 87);
                 myimg.posy += imglayer * ofGetHeight() / layer;
                 myimg.posy = ofGetHeight() - myimg.posy;
-                imgvec.push_back(myimg);
+                if(check_collision(myimg.base_note, myimg.id) == false)
+                    imgvec.push_back(myimg);
                 return true;
             }
         }
@@ -590,7 +570,8 @@ bool ofApp::chord7test(int i, bool* kdown){
                 int imglayer = (layer * (myimg.base_note - 21) / 87);
                 myimg.posy += imglayer * ofGetHeight() / layer;
                 myimg.posy = ofGetHeight() - myimg.posy;
-                imgvec.push_back(myimg);
+                if(check_collision(myimg.base_note, myimg.id) == false)
+                    imgvec.push_back(myimg);
                 return true;
             }
         }
@@ -616,7 +597,6 @@ bool ofApp::chord3test(int i, bool* kdown){
                     cnt = 0;
                 }
             }
-            
             img myimg;
             switch(j){
                 case 0:
@@ -652,6 +632,7 @@ bool ofApp::chord3test(int i, bool* kdown){
                         return true;
                     }
                 }
+                
                 myimg.base_note = i;
                 myimg.birth = timer;
                 myimg.size  = imgsize[myimg.id];
@@ -663,7 +644,8 @@ bool ofApp::chord3test(int i, bool* kdown){
                 int imglayer = (layer * (myimg.base_note - 21) / 87);
                 myimg.posy += imglayer * ofGetHeight() / layer;
                 myimg.posy = ofGetHeight() - myimg.posy;
-                imgvec.push_back(myimg);
+                if(check_collision(myimg.base_note, myimg.id) == false)
+                    imgvec.push_back(myimg);
                 return true;
             }
         }
@@ -698,18 +680,6 @@ void ofApp::test_chord(){
             if(downcount >= 6){
                 break;
             }
-            // 9 chord test
-            if(chord9test(i, kdown)){
-                continue;
-            }
-            // 7 chord test
-            if(chord7test(i, kdown)){
-                continue;
-            }
-            // 3 chord test
-            if(chord3test(i, kdown)){
-                continue;
-            }
         }
     }
     
@@ -720,21 +690,39 @@ void ofApp::test_chord(){
         myimg.id = oth;
         myimg.base_note = dd;
         unsigned long ss = imgvec.size();
-        int newid = myimg.id;
         for(int m = 0; m < ss; m++){
             if(dd == 0)
                 break;
-            if(imgvec[m].id == newid && imgvec[m].birth >= lines[dd].back().op){
+            if(imgvec[m].id == myimg.id && imgvec[m].birth >= lines[dd].back().op){
                 return;
             }
             else if(imgvec[m].base_note == myimg.base_note && timer - imgvec[m].birth <= gap){
                 return;
             }
         }
-        myimg.size  = imgsize[myimg.id];
-        myimg.posx = rand() % ofGetHeight();
-        myimg.posy = rand() % ofGetWidth();
-        imgvec.push_back(myimg);
+        myimg.size  = imgsize[myimg.id] * 40;
+        myimg.posx = rand() % ofGetWidth();
+        myimg.posy = rand() % ofGetHeight();
+        if(check_collision(myimg.base_note, myimg.id) == false)
+            imgvec.push_back(myimg);
+    }
+    else{
+        for(int i = 0; i < 200; i++){
+            if(kdown[i] == 1){
+                // 9 chord test
+                if(chord9test(i, kdown)){
+                    continue;
+                }
+                // 7 chord test
+                if(chord7test(i, kdown)){
+                    continue;
+                }
+                // 3 chord test
+                if(chord3test(i, kdown)){
+                    continue;
+                }
+            }
+        }
     }
 }
 
@@ -755,7 +743,7 @@ void ofApp::newMidiMessage (ofxMidiMessage& msg)
         if(linsize == 0)return;
         lines[p][linsize - 1].ed    = timer;
         lines[p][linsize - 1].keyup = true;
-        
+        trill[p] += 1;
         //for palindrome
         unsigned long sorder = order.size();
         for (int i = 0; i < sorder; i++){
@@ -990,10 +978,10 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
                 ofSetColor(255, 255, 255);
                 ofLoadImage(cdy, candy);
                 cdy.update();
-                cdy.draw(ppp, vol*3, vol*3);
+                cdy.draw(ppp, vol * img_size/10, vol * img_size/10);
             }
             else{
-                ofCircle(ppp,vol);
+                ofCircle(ppp,vol * img_size/30);
             }
             break;
         }
@@ -1003,10 +991,10 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
             ofSetColor(255, 255, 255);
             ofLoadImage(cdy, candy);
             cdy.update();
-            cdy.draw(ppp, vol*3, vol*3);
+            cdy.draw(ppp, vol * img_size/10, vol * img_size/10);
         }
         else{
-            ofCircle(ppp,vol);
+            ofCircle(ppp,vol * img_size/30);
         }
     }
     //reduce the notes time value by 1 so that next time this function is called
@@ -1017,6 +1005,9 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
 inline int min(int a, int b){return a > b ? b : a;}
 
 void drawimage(int i){
+    if(timer - imgvec[i].birth < 30){
+        return;
+    }
     ofImage img;
     //modify between image names
     string s = imgvec[i].path;
@@ -1215,16 +1206,16 @@ void ofApp::draw()
     for(int i = 0; i < ss; i++){
         if(imgvec[i].id == trio && (timer - imgvec[i].birth > trio_gap)){
             imgvec[i].live = 0;
-            trio_candidate[imgvec[i].base_note] = 0;
         }
     }
     
-    //test trio here
-    test_trio();
+    
     //test chord here
     test_chord();
     if(!record)
         test_motivation();
+    //test trio here
+    test_trio();
     
     //draw image here
     unsigned long size_imgvec = imgvec.size();
@@ -1257,22 +1248,6 @@ void ofApp::draw()
                     size_imgvec = image_custom5(i, size_imgvec);
                 break;
         }
-        /*
-        if(imgvec[i].live == 0){
-            #ifdef img_dissap
-            size_imgvec = image_dissapear(i, size_imgvec);
-            #endif
-            
-            //image fades/shrinks out
-            #ifdef img_fade
-            size_imgvec = image_fade(i, size_imgvec);
-            #endif
-            
-            #ifdef img_custom
-            size_imgvec = image_custom(i, size_imgvec);
-            #endif
-        }*/
-        
     }
     //print note number for motivation recording
     #ifdef debug_motivation

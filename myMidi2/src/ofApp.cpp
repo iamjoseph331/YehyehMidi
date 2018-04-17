@@ -20,10 +20,9 @@ int gap = 20, layer = 3, trio_gap = 200;
 //initial state.
 
 int timer = 0;
+int take = 1;
 int imgswap_timer = 5;
 long long int last_note_timestamp = 0;
-long long int quant_melody = 50;
-int rasuto_noto = 0;
 bool sweet = false;
 int frames[30];
 int trill[200];
@@ -258,7 +257,8 @@ void clean(){
     imgvec.clear();
     timer = 0;
     last_note_timestamp = 0;
-    rasuto_noto = 0;
+    imgswap_timer = 5;
+    last_note_timestamp = 0;
     return;
 }
 
@@ -304,34 +304,27 @@ void ofApp::test_palindrome(int i){
         unsigned long svec = imgvec.size();
         for(int j = 0; j < svec; j++){
             if(imgvec[j].id == pal && imgvec[j].birth >= lines[order[i].st_note].back().op){
-                if(imgvec[j].live == 0)
-                    imgvec[j].live = 1;
+                //if(imgvec[j].live == 0)
+                  //  imgvec[j].live = 1;
                 return;
             }
-            else if((imgvec[j].base_note == i) && timer - imgvec[j].birth < hoola){
+            else if(imgvec[j].base_note == i && timer - imgvec[j].birth < hoola){
                 last = true;
             }
         }
         if(last){
             return;
         }
-        /*/smash
-        if(lines[order[i].st_note][lines[order[i].st_note].size()-2].op >= lines[order[i].notes[(ss+1)/2]].back().op || lines[order[i].notes[(ss+1)/2]].back().op >= lines[order[i].ed_note].back().op){
-            return;
-        }*/
-        //put image in to-print vector
-        
         img myimg;
         myimg.live = 1;
         myimg.birth = timer;
         myimg.path = imgpalin;
-        printf("%s\n",imgpalin);
         myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
         myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
+        myimg.id = pal;
         myimg.size  = imgsize[myimg.id];
         if(volsiz[pal] == 1)
             myimg.size = (int)order[i].notes.size() * 6 * myimg.size;
-        myimg.id = pal;
         myimg.base_note = order[i].st_note;
         if(check_collision(myimg.base_note, myimg.id) == false)
             imgvec.push_back(myimg);
@@ -361,9 +354,16 @@ void ofApp::test_trio(){
             if(flag){
                 unsigned long ss = imgvec.size();
                 bool flag2 = false;
+                int palcnt = 0;
                 for(int j = 0; j < ss; j++){
                     if(imgvec[j].id == trio && imgvec[j].base_note == i && imgvec[j].live == 1){
                         flag2 = true;
+                    }
+                    else if(imgvec[j].id == pal){
+                        palcnt += 1;
+                        if(palcnt >= 2){
+                            flag2 = true;
+                        }
                     }
                 }
                 if(flag2){
@@ -474,7 +474,7 @@ bool ofApp::chord9test(int i, bool* kdown){
                 myimg.id    = newid;
                 myimg.size  = imgsize[myimg.id];
                 if(volsiz[myimg.id] == 1)
-                    myimg.size  = lines[i + chord_type9[j][k+endpt] - chord_type9[j][k]].back().vol * myimg.size;
+                    myimg.size  = lines[i + chord_type9[j][k+endpt] - chord_type9[j][k]].back().vol * myimg.size / 20;
                 myimg.posx  = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
                 myimg.posy  = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
                 myimg.posy /= layer;
@@ -563,7 +563,7 @@ bool ofApp::chord7test(int i, bool* kdown){
                 myimg.birth = timer;
                 myimg.size  = imgsize[myimg.id];
                 if(volsiz[myimg.id] == 1)
-                    myimg.size = lines[i + chord_type7[j][k+endpt] - chord_type7[j][k]].back().vol * myimg.size;
+                    myimg.size = lines[i + chord_type7[j][k+endpt] - chord_type7[j][k]].back().vol * myimg.size / 20;
                 myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
                 myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
                 myimg.posy /= layer;
@@ -637,7 +637,7 @@ bool ofApp::chord3test(int i, bool* kdown){
                 myimg.birth = timer;
                 myimg.size  = imgsize[myimg.id];
                 if(volsiz[myimg.id] == 1)
-                    myimg.size = lines[i + chord_type3[j][k+endpt] - chord_type3[j][k]].back().vol * myimg.size;
+                    myimg.size = lines[i + chord_type3[j][k+endpt] - chord_type3[j][k]].back().vol * myimg.size / 20;
                 myimg.posx = (myimg.size / 2) + (rand() % (ofGetWidth() - myimg.size));
                 myimg.posy = (myimg.size / 2) + (rand() % (ofGetHeight() - myimg.size));
                 myimg.posy /= layer;
@@ -909,63 +909,184 @@ void ofApp::update()
 // 2. For updating the background colour
 // 3. For display the apps instructions
 
+void setnotecolour(int note, int alpha){
+    switch(take){
+        case 1:
+            switch(note % 12){
+                case 0:
+                    ofSetColor(245, 171, 21, alpha);
+                    break;
+                case 1:
+                    ofSetColor(200, 154, 33, alpha);
+                    break;
+                case 2:
+                    ofSetColor(155, 138, 46, alpha);
+                    break;
+                case 3:
+                    ofSetColor(110, 122, 58, alpha);
+                    break;
+                case 4:
+                    ofSetColor(65, 106, 71, alpha);
+                    break;
+                case 5:
+                    ofSetColor(65, 88, 53, alpha);
+                    break;
+                case 6:
+                    ofSetColor(65, 71, 35, alpha);
+                    break;
+                case 7:
+                    ofSetColor(65, 54, 17, alpha);
+                    break;
+                case 8:
+                    ofSetColor(65, 37, 0, alpha);
+                    break;
+                case 9:
+                    ofSetColor(110, 70, 5, alpha);
+                    break;
+                case 10:
+                    ofSetColor(155, 104, 10, alpha);
+                    break;
+                case 11:
+                    ofSetColor(200, 137, 15, alpha);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case 2:
+            switch(note % 12){
+                case 0:
+                    ofSetColor(203, 135, 36, alpha);
+                    break;
+                case 1:
+                    ofSetColor(200, 124, 45, alpha);
+                    break;
+                case 2:
+                    ofSetColor(198, 113, 55, alpha);
+                    break;
+                case 3:
+                    ofSetColor(195, 102, 65, alpha);
+                    break;
+                case 4:
+                    ofSetColor(193, 92, 75, alpha);
+                    break;
+                case 5:
+                    ofSetColor(190, 80, 67, alpha);
+                    break;
+                case 6:
+                    ofSetColor(187, 68, 59, alpha);
+                    break;
+                case 7:
+                    ofSetColor(184, 56, 51, alpha);
+                    break;
+                case 8:
+                    ofSetColor(182, 44, 43, alpha);
+                    break;
+                case 9:
+                    ofSetColor(187, 66, 41, alpha);
+                    break;
+                case 10:
+                    ofSetColor(192, 89, 39, alpha);
+                    break;
+                case 11:
+                    ofSetColor(197, 112, 37, alpha);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case 3:
+            switch(note % 12){
+                case 0:
+                    ofSetColor(98, 56, 114, alpha);
+                    break;
+                case 1:
+                    ofSetColor(91, 55, 114, alpha);
+                    break;
+                case 2:
+                    ofSetColor(85, 55, 114, alpha);
+                    break;
+                case 3:
+                    ofSetColor(78, 55, 114, alpha);
+                    break;
+                case 4:
+                    ofSetColor(72, 55, 114, alpha);
+                    break;
+                case 5:
+                    ofSetColor(66, 56, 114, alpha);
+                    break;
+                case 6:
+                    ofSetColor(61, 57, 115, alpha);
+                    break;
+                case 7:
+                    ofSetColor(55, 58, 116, alpha);
+                    break;
+                case 8:
+                    ofSetColor(50, 60, 117, alpha);
+                    break;
+                case 9:
+                    ofSetColor(62, 59, 116, alpha);
+                    break;
+                case 10:
+                    ofSetColor(74, 58, 115, alpha);
+                    break;
+                case 11:
+                    ofSetColor(86, 57, 114, alpha);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+    /*
+    switch (take) {
+        case 1:
+            if(note <= 44){
+                ofSetColor(245 - (note - 22)*8, 171 - (note - 22)*3, 21 + (note - 22)*2, alpha);
+            }
+            else if(note <= 67){
+                ofSetColor(65 + (note>57?1:0), 106 - (note - 45)*3, 71  - (note - 45)*4, alpha);
+            }
+            else{
+                ofSetColor(66 + (note - 68)*7, 37 + (note - 68)*5, 0, alpha);
+            }
+            break;
+        case 2:
+            if(note <= 54){
+                ofSetColor(203 - (int)floor((note-31)/2), 135 - (note - 32)*2, 36 + (note - 32), alpha);
+            }
+            else if(note <= 77){
+                ofSetColor(193 - (int)floor((note-54)/2), 92 - (note - 55)*3, 75  - (note - 55)*2, alpha);
+            }
+            else{
+                ofSetColor(182 + (note - 78), 44 + (note - 78)*3, 43 - (int)floor((note - 76)/3), alpha);
+            }
+            break;
+        case 3:
+            if(note <= 49){
+                ofSetColor(98 - (note - 23), 56 - (note>36?1:0),114, alpha);
+            }
+            else if(note <= 76){
+                ofSetColor(72 - (note - 46), 55 + (int)floor((note - 42)/5), 114, alpha);
+            }
+            else{
+                ofSetColor(50 + (note - 69), 60 - (note - 69), 117 - (note - 69), alpha);
+            }
+            break;
+        default:
+            break;
+    }*/
+}
+
 void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
     //set the transparency of the circle to be the current time value of the note
     
     //set the colour of the circle based on the notes note number
-    switch(i % 12){
-        case 0:
-            ofSetColor(255,  0,  0, alpha);
-            break;
-            
-        case 1:
-            ofSetColor(238,130,238, alpha);
-            break;
-
-        case 2:
-            ofSetColor(255,255,  0, alpha);
-            break;
-            
-        case 3:
-            ofSetColor(255,160,122, alpha);
-            break;
-            
-        case 4:
-            ofSetColor(135,206,235, alpha);
-            break;
-            
-        case 5:
-            ofSetColor(139,  0,  0, alpha);
-            break;
-            
-        case 6:
-            ofSetColor( 66,192,251, alpha);
-            break;
-            
-        case 7:
-            ofSetColor(255,140,  0, alpha);
-            break;
-            
-        case 8:
-            ofSetColor(221,160,221, alpha);
-            break;
-            
-        case 9:
-            ofSetColor(  0,128,  0, alpha);
-            break;
-            
-        case 10:
-            ofSetColor(199, 21,133, alpha);
-            break;
-            
-        case 11:
-            ofSetColor(  0,  0,255, alpha);
-            break;
-            
-        default:
-            printf("No such note!\n");
-            break;
-    };
+    
+    setnotecolour(i, alpha);
+    
     ofPoint ppp;
     //draw a circle using the notes ofPoint value to determine the position,
     //and the notes velocity value to determine size of the circle.
@@ -1021,8 +1142,8 @@ void drawimage(int i){
     ofSetColor(255, 255, 255);
     #ifdef img_transparent
    
-    int alpha0 = 2 * lines[imgvec[i].base_note].back().vol;
-    int alpha2 = alpha0 - (alpha0 * min(disap[policy[imgvec[i].id]-1],timer-imgvec[i].birth) / (disap[policy[imgvec[i].id] - 1]));
+    double alpha0 = max(255, 2 * lines[imgvec[i].base_note].back().vol + 150);
+    double alpha2 = alpha0 - (alpha0 * min(disap[policy[imgvec[i].id]-1],(timer - imgvec[i].birth)/10) / (disap[policy[imgvec[i].id] - 1]));
     ofSetColor(255, 255, 255, alpha2);
     #endif
     img.draw(imgvec[i].posx, imgvec[i].posy - imgvec[i].size, imgvec[i].size, imgvec[i].size);
@@ -1094,12 +1215,14 @@ unsigned long image_custom2(int i, unsigned long size_imgvec){
     //    x0 x1
     // y0
     // y1
+    int delta = ofGetHeight()/ disap[policy[imgvec[i].id] - 1];
     if(timer % 90 == 0)
         imgvec[i].posx += (random() % (6 * ofGetWidth() / disap[policy[imgvec[i].id] - 1])) - (3 * ofGetWidth() / disap[policy[imgvec[i].id] - 1]);
-    if(imgvec[i].size != 0)
-        imgvec[i].posy += ((ofGetHeight()/6 - imgvec[i].posy) * 2 / imgvec[i].size);
-    imgvec[i].size -= 2;
-    if(imgvec[i].size <= 0){
+    if(imgvec[i].size > 0)
+        imgvec[i].posy -= delta;
+    if(timer % max(2,(disap[policy[imgvec[i].id] - 1]/imgvec[i].size)) == 0)
+        imgvec[i].size -= 1;
+    if(imgvec[i].size <= 0 || imgvec[i].posy <= 0){
         imgvec.erase(imgvec.begin()+i);
         i--;
         size_imgvec--;
@@ -1127,7 +1250,7 @@ unsigned long image_custom4(int i, unsigned long size_imgvec){
     // y1
     int delta = ofGetWidth() / disap[policy[imgvec[i].id] - 1];
     imgvec[i].posx -= delta;
-    if(imgvec[i].size <= 0 || imgvec[i].posx <= 0){
+    if(imgvec[i].posx <= 0 || imgvec[i].size <= 0){
         imgvec.erase(imgvec.begin()+i);
         i--;
         size_imgvec--;
@@ -1302,10 +1425,11 @@ void ofApp::draw()
 
 void ofApp::keyPressed(int key)
 {
+    /*
     if (key == 'b'){
         sweet = !sweet;
-    }
-    else if( key == 'p'){
+    }*/
+    if( key == 'p'){
         clean();
     }
     //if key 's' has been pressed
@@ -1327,15 +1451,8 @@ void ofApp::keyPressed(int key)
         //open a connection to the chosen MIDI input
         midiIn.openPort(port_num);
     }
-    else if(key == 'm'){
-        if(!record){
-            motivation.clear();
-            printf("Start recording\n");
-        }
-        else{
-            printf("End record\n");
-        }
-        record = !record;
+    else if(key == 'x'){
+        take += 1;
     }
 }
 

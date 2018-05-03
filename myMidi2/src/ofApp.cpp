@@ -33,22 +33,22 @@ int volsiz[30];
 int disap[6];
 
 int chord_type9[3][9] = {{0,4,7,11,14,12,16,19,23}, //maj      9 chord
-                         {0,3,7,10,14,12,15,19,22}, //min      9 chord
-                         {0,4,7,10,14,12,16,19,22}  //dominant 9 chord
+    {0,3,7,10,14,12,15,19,22}, //min      9 chord
+    {0,4,7,10,14,12,16,19,22}  //dominant 9 chord
 };
 int chord_type7[8][7] = {{0,4,7,11,12,16,19},       //maj      7 chord
-                         {0,3,7,10,12,15,19},       //min      7 chord
-                         {0,4,7,10,12,15,19},       //dominant 7 chord
-                         {0,3,7,11,12,15,19},       //minmaj   7 chord
-                         {0,3,6,10,12,15,18},       //halfdim  7 chord
-                         {0,3,6, 9,12,15,18},       //dim      7 chord
-                         {0,4,8,11,12,16,20},       //aug      7 chord
-                         {0,4,8,10,12,16,18}        //augdom   7 chord
+    {0,3,7,10,12,15,19},       //min      7 chord
+    {0,4,7,10,12,15,19},       //dominant 7 chord
+    {0,3,7,11,12,15,19},       //minmaj   7 chord
+    {0,3,6,10,12,15,18},       //halfdim  7 chord
+    {0,3,6, 9,12,15,18},       //dim      7 chord
+    {0,4,8,11,12,16,20},       //aug      7 chord
+    {0,4,8,10,12,16,18}        //augdom   7 chord
 };
 int chord_type3[4][5] = {{0,4,7,12,16},             //maj      3 chord
-                         {0,3,7,12,15},             //min      3 chord
-                         {0,4,8,12,16},             //aug      3 chord
-                         {0,3,6,12,15}              //dim      3 chord
+    {0,3,7,12,15},             //min      3 chord
+    {0,4,8,12,16},             //aug      3 chord
+    {0,3,6,12,15}              //dim      3 chord
 };
 
 
@@ -296,7 +296,7 @@ void ofApp::test_palindrome(int i){
         if(ss <= 4)
             //returns short instances
             return;
-
+        
         for(int j = 0; j < ss; j++){
             if(order[i].notes[j] != order[i].notes[ss - j - 1])
                 return;
@@ -316,9 +316,9 @@ void ofApp::test_palindrome(int i){
             return;
         }
         /*/smash
-        if(lines[order[i].st_note][lines[order[i].st_note].size()-2].op >= lines[order[i].notes[(ss+1)/2]].back().op || lines[order[i].notes[(ss+1)/2]].back().op >= lines[order[i].ed_note].back().op){
-            return;
-        }*/
+         if(lines[order[i].st_note][lines[order[i].st_note].size()-2].op >= lines[order[i].notes[(ss+1)/2]].back().op || lines[order[i].notes[(ss+1)/2]].back().op >= lines[order[i].ed_note].back().op){
+         return;
+         }*/
         //put image in to-print vector
         
         img myimg;
@@ -866,9 +866,9 @@ void ofApp::newMidiMessage (ofxMidiMessage& msg)
                 break;
                 
             } //if (noteData[i].time_counter == 0)
-        
+            
         } //for (int i = 0; i < MAX_NUM_OF_NOTES; i++)
-    
+        
     } //if (msg.status == MIDI_NOTE_ON)
     //if we have received a MIDI CC 1 (mod wheel) message
     else if (msg.status == MIDI_CONTROL_CHANGE && msg.control == 1)
@@ -921,7 +921,7 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
         case 1:
             ofSetColor(238,130,238, alpha);
             break;
-
+            
         case 2:
             ofSetColor(255,255,  0, alpha);
             break;
@@ -1019,14 +1019,14 @@ void drawimage(int i){
     ofLoadImage(img, s.c_str());
     img.update();
     ofSetColor(255, 255, 255);
-    #ifdef img_transparent
-   
+#ifdef img_transparent
+    
     int alpha0 = 2 * lines[imgvec[i].base_note].back().vol;
     int alpha2 = alpha0 - (alpha0 * min(disap[policy[imgvec[i].id]-1],timer-imgvec[i].birth) / (disap[policy[imgvec[i].id] - 1]));
     ofSetColor(255, 255, 255, alpha2);
-    #endif
+#endif
     img.draw(imgvec[i].posx, imgvec[i].posy - imgvec[i].size, imgvec[i].size, imgvec[i].size);
- 
+    
     if(frames[imgvec[i].id] != 1 && imgvec[i].imgswap_timer > imgswap_timer){
         imgvec[i].imgswap_timer = 0;
         imgvec[i].imgswap_id += 1;
@@ -1250,12 +1250,12 @@ void ofApp::draw()
         }
     }
     //print note number for motivation recording
-    #ifdef debug_motivation
+#ifdef debug_motivation
     for(int i = 0; i < motivation.size(); i++){
         printf("%d ",motivation[i].note_num);
     }
     printf("\n");
-    #endif
+#endif
     
     //=======================================
     //Display the apps instructions
@@ -1351,3 +1351,4 @@ void ofApp::exit()
     //stop listening for MIDI messages
     midiIn.removeListener(this);
 }
+

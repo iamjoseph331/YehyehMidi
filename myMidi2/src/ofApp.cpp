@@ -23,7 +23,7 @@ int timer = 0;
 int take = 1;
 int imgswap_timer = 5;
 long long int last_note_timestamp = 0;
-bool sweet = false;
+int sweet = 0;
 int frames[30];
 int trill[200];
 int policy[30];
@@ -1094,7 +1094,7 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
     for(int k = op; k < ed; k++){
         if(ed - op < note){
             ppp.x = (k / 10) % ofGetWidth();
-            if(sweet){
+            if(sweet == 1){
                 ofImage cdy;
                 ofSetColor(255, 255, 255);
                 ofLoadImage(cdy, candy);
@@ -1102,12 +1102,14 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
                 cdy.draw(ppp, vol * img_size/10, vol * img_size/10);
             }
             else{
-                ofCircle(ppp,vol * img_size/30);
+                if(sweet == 0){
+                    ofCircle(ppp,vol * img_size/30);
+                }
             }
             break;
         }
         ppp.x = (k / 10) % ofGetWidth();
-        if(sweet){
+        if(sweet == 1){
             ofImage cdy;
             ofSetColor(255, 255, 255);
             ofLoadImage(cdy, candy);
@@ -1115,7 +1117,9 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
             cdy.draw(ppp, vol * img_size/10, vol * img_size/10);
         }
         else{
-            ofCircle(ppp,vol * img_size/30);
+            if(sweet == 0){
+                ofCircle(ppp,vol * img_size/30);
+            }
         }
     }
     //reduce the notes time value by 1 so that next time this function is called
@@ -1425,10 +1429,11 @@ void ofApp::draw()
 
 void ofApp::keyPressed(int key)
 {
-    /*
+    
     if (key == 'b'){
-        sweet = !sweet;
-    }*/
+        sweet += 1;
+        sweet %= 3;
+    }
     if( key == 'p'){
         clean();
     }

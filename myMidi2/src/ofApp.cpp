@@ -187,6 +187,33 @@ void ofApp::setup()
         fscanf(fp, "%d", &trio_gap);
         
         fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &NoteColorSet);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d%d%d", &NoteColor[0][0], &NoteColor[1][0], &NoteColor[2][0]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d%d%d", &NoteColor[0][1], &NoteColor[1][1], &NoteColor[2][1    ]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d%d%d", &NoteColor[0][2], &NoteColor[1][2], &NoteColor[2][2]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d%d%d", &NoteColor[0][3], &NoteColor[1][3], &NoteColor[2][3]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d%d%d", &NoteColor[0][4], &NoteColor[1][4], &NoteColor[2][4]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d%d%d", &NoteColor[0][5], &NoteColor[1][5], &NoteColor[2][5]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d%d%d", &NoteColor[0][6], &NoteColor[1][6], &NoteColor[2][6]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d%d%d", &NoteColor[0][7], &NoteColor[1][7], &NoteColor[2][7]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d%d%d", &NoteColor[0][8], &NoteColor[1][8], &NoteColor[2][8]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d%d%d", &NoteColor[0][9], &NoteColor[1][9], &NoteColor[2][9]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d%d%d", &NoteColor[0][10], &NoteColor[1][10], &NoteColor[2][10]);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d%d%d", &NoteColor[0][11], &NoteColor[1][11], &NoteColor[2][11]);
+        
+        fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9big);
         fscanf(fp, "%d%d%d%d", &frames[maj9], &policy[maj9], &imgsize[maj9], &volsiz[maj9]);
         fscanf(fp, "%s", srp);
@@ -913,59 +940,64 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
     //set the transparency of the circle to be the current time value of the note
     
     //set the colour of the circle based on the notes note number
-    switch(i % 12){
-        case 0:
-            ofSetColor(255,  0,  0, alpha);
-            break;
-            
-        case 1:
-            ofSetColor(238,130,238, alpha);
-            break;
-            
-        case 2:
-            ofSetColor(255,255,  0, alpha);
-            break;
-            
-        case 3:
-            ofSetColor(255,160,122, alpha);
-            break;
-            
-        case 4:
-            ofSetColor(135,206,235, alpha);
-            break;
-            
-        case 5:
-            ofSetColor(139,  0,  0, alpha);
-            break;
-            
-        case 6:
-            ofSetColor( 66,192,251, alpha);
-            break;
-            
-        case 7:
-            ofSetColor(255,140,  0, alpha);
-            break;
-            
-        case 8:
-            ofSetColor(221,160,221, alpha);
-            break;
-            
-        case 9:
-            ofSetColor(  0,128,  0, alpha);
-            break;
-            
-        case 10:
-            ofSetColor(199, 21,133, alpha);
-            break;
-            
-        case 11:
-            ofSetColor(  0,  0,255, alpha);
-            break;
-            
-        default:
-            printf("No such note!\n");
-            break;
-    };
+    if(NoteColorSet && NoteColor[0][i%12] != -1 && NoteColor[1][i%12] != -1 && NoteColor[2][i%12] != -1){
+        ofSetColor(NoteColor[0][i%12],NoteColor[1][i%12],NoteColor[2][i%12], alpha);
+    }
+    else{
+        switch(i % 12){
+            case 0:
+                ofSetColor(255,  0,  0, alpha);
+                break;
+                
+            case 1:
+                ofSetColor(238,130,238, alpha);
+                break;
+                
+            case 2:
+                ofSetColor(255,255,  0, alpha);
+                break;
+                
+            case 3:
+                ofSetColor(255,160,122, alpha);
+                break;
+                
+            case 4:
+                ofSetColor(135,206,235, alpha);
+                break;
+                
+            case 5:
+                ofSetColor(139,  0,  0, alpha);
+                break;
+                
+            case 6:
+                ofSetColor( 66,192,251, alpha);
+                break;
+                
+            case 7:
+                ofSetColor(255,140,  0, alpha);
+                break;
+                
+            case 8:
+                ofSetColor(221,160,221, alpha);
+                break;
+                
+            case 9:
+                ofSetColor(  0,128,  0, alpha);
+                break;
+                
+            case 10:
+                ofSetColor(199, 21,133, alpha);
+                break;
+                
+            case 11:
+                ofSetColor(  0,  0,255, alpha);
+                break;
+                
+            default:
+                printf("No such note!\n");
+                break;
+        };
+    }
     ofPoint ppp;
     //draw a circle using the notes ofPoint value to determine the position,
     //and the notes velocity value to determine size of the circle.

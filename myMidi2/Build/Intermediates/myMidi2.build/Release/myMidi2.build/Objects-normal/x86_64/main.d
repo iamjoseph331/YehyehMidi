@@ -1,5 +1,5 @@
 dependencies: \
-  /Users/home/scrap_files/programming\ exercises/yehMidi/myMidi2/src/main.cpp \
+  /Users/home/scrap_files/programming_exercises/yehMidi/myMidi2/src/main.cpp \
   ../../../../Downloads/of_v0.9.8_osx_release/libs/openFrameworks/ofMain.h \
   ../../../../Downloads/of_v0.9.8_osx_release/libs/openFrameworks/utils/ofConstants.h \
   ../../../../Downloads/of_v0.9.8_osx_release/libs/glew/include/GL/glew.h \
@@ -551,7 +551,7 @@ dependencies: \
   ../../../../Downloads/of_v0.9.8_osx_release/libs/openFrameworks/video/ofAVFoundationPlayer.h \
   ../../../../Downloads/of_v0.9.8_osx_release/libs/openFrameworks/3d/ofCamera.h \
   ../../../../Downloads/of_v0.9.8_osx_release/libs/openFrameworks/3d/ofEasyCam.h \
-  /Users/home/scrap_files/programming\ exercises/yehMidi/myMidi2/src/ofApp.h \
+  /Users/home/scrap_files/programming_exercises/yehMidi/myMidi2/src/ofApp.h \
   /Users/home/Downloads/of_v0.9.8_osx_release/addons/ofxMidi/src/ofxMidi.h \
   ../../../../Downloads/of_v0.9.8_osx_release/addons/ofxMidi/src/ofxMidiIn.h \
   ../../../../Downloads/of_v0.9.8_osx_release/addons/ofxMidi/src/ofxBaseMidi.h \

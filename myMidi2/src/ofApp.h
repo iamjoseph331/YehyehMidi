@@ -55,8 +55,11 @@ private:
     vector<NoteData> motivation;
     vector<NoteData> Notevec;
     
-    //Variable for storing the apps background colour
+    //Variable for storing the app's background colour
     int backgroundColour;
+    
+    //variable for the dissapearing point for the notes
+    int vanishX = -1,vanishY = -1;
     
     //Object that handles the MIDI input
     ofxMidiIn midiIn;

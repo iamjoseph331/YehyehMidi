@@ -7,6 +7,7 @@
 #include "ofApp.h"
 #include <stdio.h>
 #define img_transparent
+#define noteshrink
 //#define quarter
 //#define debug_motivation
 
@@ -98,6 +99,9 @@ vector <opedvol> lines[200];
 vector <Nset> order;
 vector <img> imgvec;
 
+inline int min(int a, int b){return a > b ? b : a;}
+inline float mini(float a, float b){return a > b ? b : a;}
+
 void ofApp::setup()
 {
 #ifdef TARGET_OSX
@@ -162,6 +166,10 @@ void ofApp::setup()
         fscanf(fp, "%s", srp);
         fscanf(fp, "%d", &note);
         fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &vanishX);
+        fscanf(fp, "%s", srp);
+        fscanf(fp, "%d", &vanishY);
+        fscanf(fp, "%s", srp);
         fscanf(fp, "%d", &disap[0]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%d", &disap[1]);
@@ -191,7 +199,7 @@ void ofApp::setup()
         fscanf(fp, "%s", srp);
         fscanf(fp, "%d%d%d", &NoteColor[0][0], &NoteColor[1][0], &NoteColor[2][0]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][1], &NoteColor[1][1], &NoteColor[2][1    ]);
+        fscanf(fp, "%d%d%d", &NoteColor[0][1], &NoteColor[1][1], &NoteColor[2][1]);
         fscanf(fp, "%s", srp);
         fscanf(fp, "%d%d%d", &NoteColor[0][2], &NoteColor[1][2], &NoteColor[2][2]);
         fscanf(fp, "%s", srp);
@@ -1002,39 +1010,55 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
     //draw a circle using the notes ofPoint value to determine the position,
     //and the notes velocity value to determine size of the circle.
     ppp.y = ofGetHeight() - ((i - 15) * ofGetHeight() / 115);
+    float siz = vol;
+    
     for(int k = op; k < ed; k++){
         if(ed - op < note){
             ppp.x = (k / 10) % ofGetWidth();
+            if(vanishY > -1 && vanishX > -1){
+                int tmpy = ppp.x;
+                ppp.x = (i - 15) * ofGetWidth() / 115;
+                ppp.y = ofGetHeight()*15/16;
+                ppp.y = ppp.y - (ppp.y - vanishY) * mini((float)(timer - k)/ (float)disap[0],1.0);
+                ppp.x = ppp.x - (ppp.x - vanishX) * mini((float)(timer - k)/ (float)disap[0],1.0);
+                siz = vol * (1-mini((float)(timer - k)/ (float)disap[0],1.0));
+            }
             if(sweet){
                 ofImage cdy;
                 ofSetColor(255, 255, 255);
                 ofLoadImage(cdy, candy);
                 cdy.update();
-                cdy.draw(ppp, vol * img_size/10, vol * img_size/10);
+                cdy.draw(ppp, siz * img_size/10, siz * img_size/10);
             }
             else{
-                ofCircle(ppp,vol * img_size/30);
+                ofCircle(ppp,siz * img_size/30);
             }
             break;
         }
         ppp.x = (k / 10) % ofGetWidth();
+        if(vanishY > -1 && vanishX > -1){
+            int tmpy = ppp.x;
+            ppp.x = (i - 15) * ofGetWidth() / 115;
+            ppp.y = ofGetHeight()*15/16;
+            ppp.y = ppp.y - (ppp.y - vanishY) * mini((float)(timer - k)/ (float)disap[0],1.0);
+            ppp.x = ppp.x - (ppp.x - vanishX) * mini((float)(timer - k)/ (float)disap[0],1.0);
+            siz = vol * (1-mini((float)(timer - k)/ (float)disap[0],1.0));
+        }
         if(sweet){
             ofImage cdy;
             ofSetColor(255, 255, 255);
             ofLoadImage(cdy, candy);
             cdy.update();
-            cdy.draw(ppp, vol * img_size/10, vol * img_size/10);
+            cdy.draw(ppp, siz * img_size/10, siz * img_size/10);
         }
         else{
-            ofCircle(ppp,vol * img_size/30);
+            ofCircle(ppp,siz * img_size/30);
         }
     }
     //reduce the notes time value by 1 so that next time this function is called
     //it draws the notes circle with a greater transparency, giving the illusion
     //that the circle is fading out over time
 }
-
-inline int min(int a, int b){return a > b ? b : a;}
 
 void drawimage(int i){
     if(timer - imgvec[i].birth < 30){

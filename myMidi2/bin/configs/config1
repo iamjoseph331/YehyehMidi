@@ -1,36 +1,38 @@
 SET_TEMPO:      10
 SET_NOTE_SHRINK:        8
 SET_SINGLE_NOTE_LEN:    100
+SET_NOTE_SHRINK_TO_X:	300
+SET_NOTE_SHRINK_TO_Y:	500
 SET_DISAPPEAR_TIME1:    1000
 SET_DISAPPEAR_TIME2:    300
-SET_DISAPPEAR_TIME3:    300
+SET_DISAPPEAR_TIME3:    150
 SET_DISAPPEAR_TIME4:    300
 SET_DISAPPEAR_TIME5:    300
 SET_DISAPPEAR_TIME6:    2000
 SET_PALINDROME_LAST:    1202
-SET_IMAGE_SIZE:         10
+SET_IMAGE_SIZE:         100
 SET_SHRINK_SPEED:       1
 SET_CHORD_GAP:  20
 SET_LAYERS:     3
 SET_TRIO_GAP:   200
-PATH_9_CHORD_MAJ:       NONE        1       1       4       1
-PATH_9_CHORD_MIN:       NONE        1       1       4       1
-PATH_9_CHORD_DOMINANT:  NONE        1       1       4       1
-PATH_7_CHORD_MAJ:       NONE        1       1       4       1
-PATH_7_CHORD_MIN:       NONE        1       1       4       1
-PATH_7_CHORD_DOMINANT:  NONE        1       1       4       1
-PATH_7_CHORD_MINMAJ:    NONE         1       1       4       1
-PATH_7_CHORD_HALFDIM:   NONE       1       1       4       1
-PATH_7_CHORD_DIM:       NONE        1       1       4       1
-PATH_7_CHORD_AUGMAJ:    NONE       1       1       4       1
-PATH_7_CHORD_AUGDOM:    NONE       1       1       4       1
-PATH_3_CHORD_MAJ:       NONE        1       1       4       1
-PATH_3_CHORD_MIN:       NONE        1       1       4       1
-PATH_3_CHORD_DIM:       NONE        1       1       4       1
-PATH_3_CHORD_AUG:       NONE        1       1       4       1
-PATH_CHORD_OTHER:       NONE       4       1       4       1
-PATH_PALINDROME:        NONE  1       1       4       1
-PATH_TRILL:             NONE       1       6       4       1
+PATH_9_CHORD_MAJ:       9maj.png        1       1       4       1
+PATH_9_CHORD_MIN:       9min.png        1       1       4       1
+PATH_9_CHORD_DOMINANT:  9dom.png        1       1       4       1
+PATH_7_CHORD_MAJ:       7maj.png        1       1       4       1
+PATH_7_CHORD_MIN:       7min.png        1       1       4       1
+PATH_7_CHORD_DOMINANT:  7dom.png        1       1       4       1
+PATH_7_CHORD_MINMAJ:    7mm.png         1       1       4       1
+PATH_7_CHORD_HALFDIM:   7hdim.png       1       1       4       1
+PATH_7_CHORD_DIM:       7dim.png        1       1       4       1
+PATH_7_CHORD_AUGMAJ:    7amaj.png       1       1       4       1
+PATH_7_CHORD_AUGDOM:    7ad om.png       1       1       4       1
+PATH_3_CHORD_MAJ:       3maj.png        1       3      24       1
+PATH_3_CHORD_MIN:       3min.png        1       1       4       1
+PATH_3_CHORD_DIM:       3dim.png        1       1       4       1
+PATH_3_CHORD_AUG:       3aug.png        1       1       4       1
+PATH_CHORD_OTHER:       gifts.png       4       4       4       1
+PATH_PALINDROME:        3maj.png  	1       4      10       1
+PATH_TRILL:             trill.png       1       5       4       1
 PATH_NOTE:              NONE            1       1       4       1
 PATH_BACKGROUND:        NONE
 

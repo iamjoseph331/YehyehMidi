@@ -58,6 +58,10 @@ private:
     //Variable for storing the apps background colour
     int backgroundColour;
     
+    //position determining vanishing point
+    int vanishX = -1;
+    int vanishY = -1;
+    
     //Object that handles the MIDI input
     ofxMidiIn midiIn;
     

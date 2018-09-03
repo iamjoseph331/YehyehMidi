@@ -69,7 +69,7 @@ private:
     int NoteColorSet;
     
     //path of images
-    int NoteColor[3][12];
+    int NoteColor[4][12];
     char img9big[50], img9small[50], img9dom[50];
     char img7big[50], img7small[50], img7dom[50], img7mmj[50], img7hdi[50], img7dim[50], img7aug[50], img7ado[50];
     char img3big[50], img3small[50], img3dim[50], img3aug[50], imgdisaster[50];

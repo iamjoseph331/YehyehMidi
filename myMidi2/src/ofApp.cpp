@@ -197,29 +197,29 @@ void ofApp::setup()
         fscanf(fp, "%s", srp);
         fscanf(fp, "%d", &NoteColorSet);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][0], &NoteColor[1][0], &NoteColor[2][0]);
+        fscanf(fp, "%d%d%d%d", &NoteColor[0][0], &NoteColor[1][0], &NoteColor[2][0], &NoteColor[3][0]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][1], &NoteColor[1][1], &NoteColor[2][1]);
+        fscanf(fp, "%d%d%d%d", &NoteColor[0][1], &NoteColor[1][1], &NoteColor[2][1], &NoteColor[3][1]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][2], &NoteColor[1][2], &NoteColor[2][2]);
+        fscanf(fp, "%d%d%d%d", &NoteColor[0][2], &NoteColor[1][2], &NoteColor[2][2], &NoteColor[3][2]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][3], &NoteColor[1][3], &NoteColor[2][3]);
+        fscanf(fp, "%d%d%d%d", &NoteColor[0][3], &NoteColor[1][3], &NoteColor[2][3], &NoteColor[3][3]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][4], &NoteColor[1][4], &NoteColor[2][4]);
+        fscanf(fp, "%d%d%d%d", &NoteColor[0][4], &NoteColor[1][4], &NoteColor[2][4], &NoteColor[3][4]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][5], &NoteColor[1][5], &NoteColor[2][5]);
+        fscanf(fp, "%d%d%d%d", &NoteColor[0][5], &NoteColor[1][5], &NoteColor[2][5], &NoteColor[3][5]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][6], &NoteColor[1][6], &NoteColor[2][6]);
+        fscanf(fp, "%d%d%d%d", &NoteColor[0][6], &NoteColor[1][6], &NoteColor[2][6], &NoteColor[3][6]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][7], &NoteColor[1][7], &NoteColor[2][7]);
+        fscanf(fp, "%d%d%d%d", &NoteColor[0][7], &NoteColor[1][7], &NoteColor[2][7], &NoteColor[3][7]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][8], &NoteColor[1][8], &NoteColor[2][8]);
+        fscanf(fp, "%d%d%d%d", &NoteColor[0][8], &NoteColor[1][8], &NoteColor[2][8], &NoteColor[3][8]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][9], &NoteColor[1][9], &NoteColor[2][9]);
+        fscanf(fp, "%d%d%d%d", &NoteColor[0][9], &NoteColor[1][9], &NoteColor[2][9], &NoteColor[3][9]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][10], &NoteColor[1][10], &NoteColor[2][10]);
+        fscanf(fp, "%d%d%d%d", &NoteColor[0][10], &NoteColor[1][10], &NoteColor[2][10], &NoteColor[3][10]);
         fscanf(fp, "%s", srp);
-        fscanf(fp, "%d%d%d", &NoteColor[0][11], &NoteColor[1][11], &NoteColor[2][11]);
+        fscanf(fp, "%d%d%d%d", &NoteColor[0][11], &NoteColor[1][11], &NoteColor[2][11], &NoteColor[3][11]);
         
         fscanf(fp, "%s", srp);
         fscanf(fp, "%s", img9big);
@@ -949,7 +949,8 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
     
     //set the colour of the circle based on the notes note number
     if(NoteColorSet && NoteColor[0][i%12] != -1 && NoteColor[1][i%12] != -1 && NoteColor[2][i%12] != -1){
-        ofSetColor(NoteColor[0][i%12],NoteColor[1][i%12],NoteColor[2][i%12], alpha);
+        ofSetColor(NoteColor[0][i%12],NoteColor[1][i%12],NoteColor[2][i%12],
+                  (int)((float)NoteColor[3][i%12]*(float)alpha/255));
     }
     else{
         switch(i % 12){
@@ -1009,7 +1010,7 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
     ofPoint ppp;
     //draw a circle using the notes ofPoint value to determine the position,
     //and the notes velocity value to determine size of the circle.
-    ppp.y = ofGetHeight() - ((i - 15) * ofGetHeight() / 115);
+    ppp.y = ofGetHeight() - ((i - 15) * ofGetHeight() / 110);
     float siz = vol;
     
     for(int k = op; k < ed; k++){
@@ -1017,7 +1018,7 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
             ppp.x = (k / 10) % ofGetWidth();
             if(vanishY > -1 && vanishX > -1){
                 int tmpy = ppp.x;
-                ppp.x = (i - 15) * ofGetWidth() / 115;
+                ppp.x = (i - 15) * ofGetWidth() / 110;
                 ppp.y = ofGetHeight()*15/16;
                 ppp.y = ppp.y - (ppp.y - vanishY) * mini((float)(timer - k)/ (float)disap[0],1.0);
                 ppp.x = ppp.x - (ppp.x - vanishX) * mini((float)(timer - k)/ (float)disap[0],1.0);
@@ -1038,7 +1039,7 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
         ppp.x = (k / 10) % ofGetWidth();
         if(vanishY > -1 && vanishX > -1){
             int tmpy = ppp.x;
-            ppp.x = (i - 15) * ofGetWidth() / 115;
+            ppp.x = (i - 15) * ofGetWidth() / 110;
             ppp.y = ofGetHeight()*15/16;
             ppp.y = ppp.y - (ppp.y - vanishY) * mini((float)(timer - k)/ (float)disap[0],1.0);
             ppp.x = ppp.x - (ppp.x - vanishX) * mini((float)(timer - k)/ (float)disap[0],1.0);

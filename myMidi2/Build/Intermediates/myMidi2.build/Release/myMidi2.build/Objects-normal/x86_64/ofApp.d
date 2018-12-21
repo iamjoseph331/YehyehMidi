@@ -1,6 +1,6 @@
 dependencies: \
-  /Users/home/scrap_files/programming_exercises/yehMidi/myMidi2/src/ofApp.cpp \
-  /Users/home/scrap_files/programming_exercises/yehMidi/myMidi2/src/ofApp.h \
+  /Users/home/scrap_files/programming_exercises/yehSquare/myMidi2/src/ofApp.cpp \
+  /Users/home/scrap_files/programming_exercises/yehSquare/myMidi2/src/ofApp.h \
   ../../../../Downloads/of_v0.9.8_osx_release/libs/openFrameworks/ofMain.h \
   ../../../../Downloads/of_v0.9.8_osx_release/libs/openFrameworks/utils/ofConstants.h \
   ../../../../Downloads/of_v0.9.8_osx_release/libs/glew/include/GL/glew.h \

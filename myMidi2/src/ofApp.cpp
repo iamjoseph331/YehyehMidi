@@ -1032,7 +1032,7 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
                 cdy.draw(ppp, siz * img_size/10, siz * img_size/10);
             }
             else{
-                ofCircle(ppp,siz * img_size/30);
+                ofRect(ppp,siz * img_size/30,siz * img_size/30);
             }
             break;
         }
@@ -1053,7 +1053,9 @@ void ofApp::drawnote(int i, int alpha, int op, int ed, int vol){
             cdy.draw(ppp, siz * img_size/10, siz * img_size/10);
         }
         else{
-            ofCircle(ppp,siz * img_size/30);
+            ofFill();
+            ofRect(ppp, img_size/3, img_size/3);
+            printf("yes\n");
         }
     }
     //reduce the notes time value by 1 so that next time this function is called

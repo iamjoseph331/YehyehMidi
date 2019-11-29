@@ -44,3 +44,6 @@ This project is licensed under the MIT License
 ## Acknowledgments
 
 --
+If you appreciate this work, or want to know more about it or other projects made by me, 
+please visit my research blog: 
+https://b04902041.wixsite.com/index
